@@ -10,12 +10,22 @@
         <button type="button" id="convert-button">Convert</button>
     </form>
 
+    <div id="loader" style="display: none;">Loading...</div>
+    <div id="downloader" style="display: none;">Downloading...</div>    
+    <button id="upload-button" style="display: none;">Download PDF</button>
+
     <script>
-        document.getElementById('convert-button').addEventListener('click', function(event) {
+        const convertButton = document.getElementById('convert-button');
+        const loader = document.getElementById('loader');
+        const uploadButton = document.getElementById('upload-button');
+        const downloader = document.getElementById('downloader');
+        convertButton.addEventListener('click', function(event) {
+            loader.style.display = 'block';  // Show loading icon
+
             const url = document.getElementById('url-input').value;
             const data = { url: url };
-            
-            fetch('http://127.0.0.1:5000/convert', {  // Update the URL to specify the server endpoint
+
+            fetch('http://127.0.0.1:5000/convert', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -25,9 +35,37 @@
             .then(response => response.json())
             .then(data => {
                 console.log('Success:', data);
+                loader.style.display = 'none';  // Hide loading icon
+                uploadButton.style.display = 'block';  // Show upload button
+                uploadButton.addEventListener('click', function() {
+//                    window.location.href = data.pdf_url;  // Trigger PDF download
+                downloader.style.display = 'block'; 
+                fetch('http://127.0.0.1:5000/download/' + data.pdf_id, {
+                            method: 'GET'
+                        })
+                        .then(response => response.blob())
+                        .then(blob => {
+                            const url = window.URL.createObjectURL(new Blob([blob]));
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = 'converted.pdf';
+                            document.body.appendChild(a);
+                            a.click();
+                            window.URL.revokeObjectURL(url);
+                            document.body.removeChild(a);
+                            downloader.style.display = 'none';
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            
+                            // Hide loading icon in case of error
+                            downloader.style.display = 'none';
+                        });
+                });
             })
             .catch((error) => {
                 console.error('Error:', error);
+                loader.style.display = 'none';  // Hide loading icon on error
             });
         });
     </script>
