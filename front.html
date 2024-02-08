@@ -7,17 +7,15 @@
 <body>
     <form id="url-form">
         <input type="text" id="url-input" placeholder="Enter the DocSend URL here">
-        <button type="submit">Convert</button>
+        <button type="button" id="convert-button">Convert</button>
     </form>
 
     <script>
-        document.getElementById('url-form').addEventListener('submit', function(event) {
-            event.preventDefault();
-            
+        document.getElementById('convert-button').addEventListener('click', function(event) {
             const url = document.getElementById('url-input').value;
             const data = { url: url };
             
-            fetch('/convert', {
+            fetch('http://127.0.0.1:5000/convert', {  // Update the URL to specify the server endpoint
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
