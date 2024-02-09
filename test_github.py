@@ -9,10 +9,13 @@ options.add_argument("window-size=1400,1500")
 
 driver = webdriver.Chrome(options=options)
 
+driver_version = driver.capabilities['browserVersion']
+print("WebDriver for Chrome version:", driver_version)
+
 # Navigate to github.com
-driver.get(url)
+# driver.get(url)
 
-# Extract the top heading from github.com
-text = driver.find_element_by_class_name('h000-mktg').text
+# # Extract the top heading from github.com
+# text = driver.find_element_by_class_name('h000-mktg').text
 
-print(text)
+# print(text)
