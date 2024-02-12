@@ -27,6 +27,9 @@ collection = db["pdf"]
 
 chrome_options = webdriver.ChromeOptions()
 chrome_options.add_argument("--ignore-certificate-errors")
+chrome_options.add_argument("--headless")
+chrome_options.add_argument("--no-sandbox")
+chrome_options.add_argument("--disable-dev-shm-usage")
 
 def test_db_connection():
     print("test_db_connection")
@@ -97,11 +100,11 @@ def convert():
                     with open(file_path, "rb") as pdf_file:
                         binary_data = pdf_file.read()
                         pdf_inserted = pdf_collection.insert_one({"url": url_to_convert, "content": binary_data})
-                        pdf_id = pdf_inserted.inserted_id     
+                        pdf_id = pdf_inserted.inserted_id
                     os.remove(file_path)  # Optionally remove the file after processing                    
                     break
                     # pdf_inserted = pdf_collection.insert_one({"url": url_to_convert, "content": binary_data})
-            if pdf_id is not None:                    
+            if pdf_id is not None: 
                 print(pdf_id)
                 print("Success")
                 return jsonify({'message': 'PDF converted and saved to MongoDB', 'pdf_id': str(pdf_id)}), 200                          
