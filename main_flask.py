@@ -29,10 +29,81 @@ chrome_options.add_argument("--headless")
 chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--disable-dev-shm-usage")
 
-@app.route("/")
+# @app.route("/")
+# def hello_world():
+#  return "Hello World!"
+
+
+        
+@app.route('/')
 def hello_world():
- return "Hello World!"
- 
+    
+    try:
+        data = request.get_json()  # Use get_json to extract JSON data from the request
+        url_to_convert = data.get('url')
+        pdf_collection = test_db_connection()
+        # pdf_collection.insert_one({"file_data": "binary_data"})
+
+        if not url_to_convert:
+            return jsonify({'error': 'No URL provided'}), 400
+        
+        # Add the code for PDF conversion using Selenium
+        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+        driver.get("http://deck2pdf.com")
+        
+        input_field = driver.find_element(By.ID, 'docsendURL')
+        input_field.send_keys(url_to_convert)
+
+        convert_button = driver.find_element(By.CLASS_NAME, 'btn-primary')
+        convert_button.click()
+
+        timeout = 1200
+        link_element = WebDriverWait(driver, timeout).until(
+            EC.presence_of_element_located(
+                (By.XPATH, "//a[contains(@href, '/tmp/') and contains(@href, '.pdf')]")
+            )
+        )
+        link_element.click()
+        
+        downloads_folder = os.path.join(os.path.expanduser('~'), 'Downloads')
+        seen_files = set()  # A set to keep track   of processed files
+
+        time.sleep(1)  # A slight delay to ensure the file is downloaded.
+
+        pdf_id = None
+        while True:
+            time.sleep(0.1)  # Poll every second
+            for filename in os.listdir(downloads_folder):
+                if filename.endswith('.pdf') and filename not in seen_files:
+                    file_path = os.path.join(downloads_folder, filename)
+                    with open(file_path, "rb") as pdf_file:
+                        binary_data = pdf_file.read()
+                        pdf_inserted = pdf_collection.insert_one({"url": url_to_convert, "content": binary_data})
+                        pdf_id = pdf_inserted.inserted_id
+                    os.remove(file_path)  # Optionally remove the file after processing                    
+                    break
+                    # pdf_inserted = pdf_collection.insert_one({"url": url_to_convert, "content": binary_data})
+            if pdf_id is not None: 
+                print(pdf_id)
+                print("Success")
+                return jsonify({'message': 'PDF converted and saved to MongoDB', 'pdf_id': str(pdf_id)}), 200                          
+                break
+        
+        print("Sucess")
+        return jsonify({'message': 'PDF converted and saved to MongoDB'}), 200
+            # return jsonify({'message': 'PDF converted and saved to MongoDB', 'pdf_id': str(pdf_id)}), 200
+
+
+
+                    # print(f"Success: {filename} opened and data inserted successfully")
+
+        # pdf_collection.insert_one({"file_data": "binary_data"})
+    except TimeoutException:
+        print(f"Timeout occurred after {timeout} seconds while waiting for the PDF download link.")
+        return jsonify({'error': 'Timeout occurred while waiting for the PDF download link.'}), 500
+    except Exception as e:
+        return jsonify({'error': f'An error occurred: {e}'}), 500
+     
 def test_db_connection():
     print("test_db_connection")
     try:
@@ -61,6 +132,7 @@ def download_pdf(pdf_id):
         
 @app.route('/convert', methods=['POST'])
 def convert():
+    
     try:
         data = request.get_json()  # Use get_json to extract JSON data from the request
         url_to_convert = data.get('url')
