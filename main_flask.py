@@ -36,6 +36,7 @@ chrome_options.add_argument("--disable-dev-shm-usage")
 
         
 @app.route('/')
+@cross_origin() 
 def hello_world():
     
     try:
@@ -108,7 +109,7 @@ def test_db_connection():
     print("test_db_connection")
     try:
         client = MongoClient("mongodb+srv://adinbo:ElectionsApp2023@cluster0.etzh8ey.mongodb.net/?retryWrites=true&w=majority")
-        db1 = client.pdfdatabase  # Access the pdfdatabase
+        db1 = client.pdfdatabase  # Access the pdfdatabase  
         # Check if the connection is successful by accessing a collection
         pdf_collection = db1.pdf
         print( "Successfully connected to database!")
@@ -118,6 +119,7 @@ def test_db_connection():
         return f"Failed to connect to the database: {e}"
     
 @app.route('/download/<pdf_id>', methods=['GET'])
+@cross_origin() 
 def download_pdf(pdf_id):
     pdf_collection = test_db_connection()
 
@@ -131,6 +133,7 @@ def download_pdf(pdf_id):
 
         
 @app.route('/convert', methods=['POST'])
+@cross_origin() 
 def convert():
     
     try:
