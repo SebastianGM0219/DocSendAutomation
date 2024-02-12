@@ -25,7 +25,8 @@
             const url = document.getElementById('url-input').value;
             const data = { url: url };
 
-            fetch('http://127.0.0.1:5000/convert', {
+            // fetch('http://127.0.0.1:5000/convert', {
+            fetch('https://54.85.2.80:80/convert', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

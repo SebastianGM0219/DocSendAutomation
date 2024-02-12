@@ -13,10 +13,8 @@ from selenium.common.exceptions import TimeoutException
 from pymongo import MongoClient
 from flask_cors import CORS, cross_origin
 from bson.json_util import dumps
-import gridfs
 import time
 import os
-import webbrowser
 
 app = Flask(__name__)
 CORS(app)
@@ -31,6 +29,10 @@ chrome_options.add_argument("--headless")
 chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--disable-dev-shm-usage")
 
+@app.route("/")
+def hello_world():
+ return "Hello World!"
+ 
 def test_db_connection():
     print("test_db_connection")
     try:
