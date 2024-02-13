@@ -13,6 +13,7 @@ from selenium.common.exceptions import TimeoutException
 from pymongo import MongoClient
 from flask_cors import CORS
 from bson.json_util import dumps
+import traceback
 import time
 import os
 
@@ -75,7 +76,7 @@ def download_pdf(pdf_id):
         return jsonify({'error': str(e)}), 500
 
 
-@app.route('/convert/', methods=['POST'])
+@app.route('/convert', methods=['POST'])
 def convert():
     
     try:

@@ -27,11 +27,12 @@
 
             console.log(data);
             // fetch('http://127.0.0.1:5000/convert', {
-            fetch('http://3.86.248.52:80/convert', {
+            fetch('http://3.95.149.131/convert', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
+                mode: 'no-cors',
                 body: JSON.stringify(data),
             })
             .then(response => response.json())
@@ -42,7 +43,7 @@
                 uploadButton.addEventListener('click', function() {
 //                    window.location.href = data.pdf_url;  // Trigger PDF download
                 downloader.style.display = 'block'; 
-                fetch('http://127.0.0.1:5000/download/' + data.pdf_id, {
+                fetch('http://3.95.149.131/download/' + data.pdf_id, {
                             method: 'GET'
                         })
                         .then(response => response.blob())
