@@ -1,7 +1,6 @@
 {
   "dependencies": {
     "chromedriver": "^121.0.0",
-    "puppeteer": "^22.0.0",
     "selenium-webdriver": "^4.17.0",
     "sql-query-identifier": "^2.6.0"
   },

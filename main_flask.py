@@ -17,9 +17,9 @@ import time
 import os
 
 app = Flask(__name__)
-# CORS(app)
-cors = CORS(app)
-app.config['CORS_HEADERS'] = 'Content-Type'
+CORS(app)
+#cors = CORS(app)
+# app.config['CORS_HEADERS'] = 'Content-Type'
 # CORS(app, resources={r"/convert": {"origins": "*"}})
 mongo_client = MongoClient("mongodb+srv://adinbo:ElectionsApp2023@cluster0.etzh8ey.mongodb.net/?retryWrites=true&w=majority")
 db = mongo_client["pdfdatabase"]
@@ -38,12 +38,12 @@ chrome_options.add_argument("--disable-dev-shm-usage")
 
 
 @app.route('/test/', methods= ['POST'])
-@cross_origin()
+# @cross_origin()
 def hello_world():
   return "#hello world#!!!!"
 
 @app.route('/')
-@cross_origin()
+# @cross_origin()
 def hello_world1():
   return "#hello world without url#!!!!"
         
