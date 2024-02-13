@@ -18,7 +18,8 @@ import os
 
 app = Flask(__name__)
 # CORS(app)
-CORS(app, support_credentials=True)
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 # CORS(app, resources={r"/convert": {"origins": "*"}})
 mongo_client = MongoClient("mongodb+srv://adinbo:ElectionsApp2023@cluster0.etzh8ey.mongodb.net/?retryWrites=true&w=majority")
 db = mongo_client["pdfdatabase"]
@@ -37,12 +38,12 @@ chrome_options.add_argument("--disable-dev-shm-usage")
 
 
 @app.route('/test/', methods= ['POST'])
-@cross_origin(supports_credentials=True)
+@cross_origin()
 def hello_world():
   return "#hello world#!!!!"
 
 @app.route('/')
-@cross_origin(supports_credentials=True)
+@cross_origin()
 def hello_world1():
   return "#hello world without url#!!!!"
         
@@ -62,7 +63,7 @@ def test_db_connection():
         return f"Failed to connect to the database: {e}"
     
 @app.route('/download/<pdf_id>', methods=['GET'])
-@cross_origin(supports_credentials=True)
+@cross_origin()
 def download_pdf(pdf_id):
     pdf_collection = test_db_connection()
 
@@ -76,7 +77,7 @@ def download_pdf(pdf_id):
 
 
 @app.route('/convert/', methods=['POST'])
-@cross_origin(supports_credentials=True)
+@cross_origin()
 def convert():
     
     try:
