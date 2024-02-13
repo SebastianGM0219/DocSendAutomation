@@ -36,10 +36,10 @@ chrome_options.add_argument("--disable-dev-shm-usage")
 
 
         
-@app.route('/')
+@app.route('/test_url')
 @cross_origin() 
 def hello_world():
-  return "hello world!!!!"
+  return "#hello world#!!!!"
      
 def test_db_connection():
     print("test_db_connection")
@@ -67,7 +67,7 @@ def download_pdf(pdf_id):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-        
+
 @app.route('/convert', methods=['POST'])
 @cross_origin() 
 def convert():
