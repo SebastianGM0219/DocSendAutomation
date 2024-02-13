@@ -11,7 +11,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import TimeoutException
 from pymongo import MongoClient
-from flask_cors import CORS, cross_origin
+from flask_cors import CORS
 from bson.json_util import dumps
 import time
 import os
@@ -63,7 +63,6 @@ def test_db_connection():
         return f"Failed to connect to the database: {e}"
     
 @app.route('/download/<pdf_id>', methods=['GET'])
-@cross_origin()
 def download_pdf(pdf_id):
     pdf_collection = test_db_connection()
 
@@ -77,7 +76,6 @@ def download_pdf(pdf_id):
 
 
 @app.route('/convert/', methods=['POST'])
-@cross_origin()
 def convert():
     
     try:
