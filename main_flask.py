@@ -17,8 +17,8 @@ import time
 import os
 
 app = Flask(__name__)
-# CORS(app)
-CORS(app, resources={r"/convert": {"origins": "*"}})
+CORS(app)
+# CORS(app, resources={r"/convert": {"origins": "*"}})
 mongo_client = MongoClient("mongodb+srv://adinbo:ElectionsApp2023@cluster0.etzh8ey.mongodb.net/?retryWrites=true&w=majority")
 db = mongo_client["pdfdatabase"]
 # fs = gridfs.GridFS(db)
