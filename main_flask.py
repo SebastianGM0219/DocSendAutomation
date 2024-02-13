@@ -38,7 +38,7 @@ chrome_options.add_argument("--disable-dev-shm-usage")
 
 @app.route('/')
 @cross_origin() 
-def hello_world():
+def hello_world1():
   return "#hello world without url#!!!!"
         
 @app.route('/test_url/')
