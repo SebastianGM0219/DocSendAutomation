@@ -123,7 +123,7 @@
                normalMessage.style.display = 'none'; 
                urlInput.style.display = 'none';
                downloadingMessage.style.display = 'block';
-                fetch('http://127.0.0.1:5000/convert', {
+                fetch('https://2627-18-118-218-235.ngrok-free.app/convert', {
 
                 method: 'POST',
                 headers: {
@@ -142,7 +142,7 @@
                     uploadButton.addEventListener('click', function() {
     //                    window.location.href = data.pdf_url;  // Trigger PDF download
                     downloader.style.display = 'block'; 
-                    fetch('http://127.0.0.1:5000/download/' + data.pdf_id, {
+                    fetch('https://2627-18-118-218-235.ngrok-free.app/download/' + data.pdf_id, {
                                 method: 'GET'
                             })
                             .then(response => response.blob())
