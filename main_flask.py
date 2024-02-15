@@ -12,6 +12,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import TimeoutException
 from pymongo import MongoClient
 from flask_cors import CORS
+from flask import Response, stream_with_context
 from bson.json_util import dumps
 import time
 import os
@@ -28,7 +29,7 @@ collection = db["pdf"]
 
 chrome_options = webdriver.ChromeOptions()
 chrome_options.add_argument("--ignore-certificate-errors")
-chrome_options.add_argument("--headless")
+# chrome_options.add_argument("--headless")
 chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--disable-dev-shm-usage")
 
@@ -62,19 +63,34 @@ def test_db_connection():
     except Exception as e:
         return f"Failed to connect to the database: {e}"
     
+# @app.route('/download/<pdf_id>', methods=['GET'])
+# def download_pdf(pdf_id):
+#     pdf_collection = test_db_connection()
+
+#     try:
+#         pdf_data = pdf_collection.find_one({"_id": ObjectId(pdf_id)})
+#         if not pdf_data:
+#             return jsonify({'error': 'File not found'}), 404
+#         return Response(pdf_data['content'], mimetype='application/pdf', headers={'Content-Disposition': 'attachment;filename={}.pdf'.format(pdf_id)})
+#     except Exception as e:  
+#         return jsonify({'error': str(e)}), 500
+
+
 @app.route('/download/<pdf_id>', methods=['GET'])
 def download_pdf(pdf_id):
     pdf_collection = test_db_connection()
-
     try:
         pdf_data = pdf_collection.find_one({"_id": ObjectId(pdf_id)})
         if not pdf_data:
             return jsonify({'error': 'File not found'}), 404
-        return Response(pdf_data['content'], mimetype='application/pdf', headers={'Content-Disposition': 'attachment;filename={}.pdf'.format(pdf_id)})
-    except Exception as e:
+
+        def generate():
+            yield pdf_data['content']
+        return Response(stream_with_context(generate()), mimetype='application/pdf',
+                        headers={'Content-Disposition': 'attachment;filename={}.pdf'.format(pdf_id)})
+    except Exception as e:  
         return jsonify({'error': str(e)}), 500
-
-
+    
 @app.route('/convert', methods=['POST'])
 def convert():
     
@@ -109,7 +125,7 @@ def convert():
         downloads_folder = os.path.join(os.path.expanduser('~'), 'Downloads')
         seen_files = set()  # A set to keep track   of processed files
 
-        time.sleep(1)  # A slight delay to ensure the file is downloaded.
+        time.sleep(2)  # A slight delay to ensure the file is downloaded.
 
         pdf_id = None
         while True:

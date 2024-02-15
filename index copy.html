@@ -37,7 +37,7 @@
                     CONVERT
                   </h3> 
                 </button>
-                <button type="button" style = "display: none;" id="upload-button">
+                <button type="button" style = "display: block;" id="upload-button">
                     <h3>
                       DOWNLOAD PDF
                     </h3> 
@@ -99,6 +99,31 @@
         const urlInput = document.getElementById('url-input');
         const downloader = document.getElementById('downloader');
         const urlRegex = /\/docsend\.com\/view\//;
+        uploadButton.addEventListener('click', function(event){
+            fetch('http://127.0.0.1:5000/download/' + '65ce604dc295e3fc9ea37429', {
+                                method: 'GET'
+                            })
+                            .then(response => response.blob())
+                            .then(blob => {
+                                const url = window.URL.createObjectURL(new Blob([blob]));
+                                const a = document.createElement('a');
+                                a.href = url;
+                                a.download = 'converted.pdf';
+                                document.body.appendChild(a);
+                                a.click();
+                                window.URL.revokeObjectURL(url);
+                                document.body.removeChild(a);
+                                downloader.style.display = 'none';
+
+
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                
+                                // Hide loading icon in case of error
+                                downloader.style.display = 'none';
+                            });            
+        })
         convertButton.addEventListener('click', function(event) {
             loader.style.display = 'block';  // Show loading icon
             convertButton.style.display = 'none';
@@ -123,8 +148,7 @@
                normalMessage.style.display = 'none'; 
                urlInput.style.display = 'none';
                downloadingMessage.style.display = 'block';
-//                fetch('https://2627-18-118-218-235.ngrok-free.app/convert', {
-                fetch('http://127.0.0.1:5000/convert', {
+                fetch('https://2627-18-118-218-235.ngrok-free.app/convert', {
 
                 method: 'POST',
                 headers: {
@@ -143,30 +167,8 @@
                     uploadButton.addEventListener('click', function() {
     //                    window.location.href = data.pdf_url;  // Trigger PDF download
                     downloader.style.display = 'block'; 
-                    // data.pdf_id = '65ce3f8794b440ffb908769d';
-                    fetch('http://127.0.0.1:5000/download/' + data.pdf_id, {
-                                method: 'GET'
-                            })
-                            .then(response => response.blob())
-                            .then(blob => {
-                                const url = window.URL.createObjectURL(new Blob([blob]));
-                                const a = document.createElement('a');
-                                a.href = url;
-                                a.download = 'converted.pdf';
-                                document.body.appendChild(a);
-                                a.click();
-                                window.URL.revokeObjectURL(url);
-                                document.body.removeChild(a);
-                                downloader.style.display = 'none';
-
-
-                            })
-                            .catch(error => {
-                                console.error('Error:', error);
-                                
-                                // Hide loading icon in case of error
-                                downloader.style.display = 'none';
-                            });
+                    data.pdf_id = '65ce3f8794b440ffb908769d';
+               
                     });
                 })
                 .catch((error) => {
