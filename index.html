@@ -5,70 +5,179 @@
     <title>Convert URL to PDF</title>
 </head>
 <body>
-    <form id="url-form">
-        <input type="text" id="url-input" placeholder="Enter the DocSend URL here">
-        <button type="button" id="convert-button">Convert</button>
-    </form>
+    <div id = "mainBorder"> 
+        <div><h1>DS2PDF</h1></div>
+        <div><h1>Convert DocSend links to a PDF</h1></div>
+    
+        <form id="url-form">
+            <input type="text" id="url-input" placeholder="https://docsend.com/...">            
+            <div id="error-message" style="display: none; color: red;">
+                <h2>Please enter a valid DocSend Url</h2>
+            </div>
+            <div id="normal-message" style="display: block; color: black;">
+                <h2>Enter the DocSend link above</h2>
+            </div>
 
-    <div id="loader" style="display: none;">Loading...</div>
-    <div id="downloader" style="display: none;">Downloading...</div>    
-    <button id="upload-button" style="display: none;">Download PDF</button>
+            <div id="loader" style="display: none;">
+                <img src="spin_main.gif" alt="Loading..." />
+            </div>        
+    
+            <div id="downloading-message" style="display: none; color: black;">
+                <h2>Converting the document</h2>
+                <h2>This can take up to 1 minute</h2>
+            </div>
+
+            <div id="download-message" style="display: none; color: black;">
+                <h2>Click the button to download your PDF</h2>
+            </div>
+
+            <div>
+                <button type="button" id="convert-button">
+                  <h3>
+                    CONVERT
+                  </h3> 
+                </button>
+                <button type="button" style = "display: none;" id="upload-button">
+                    <h3>
+                      DOWNLOAD PDF
+                    </h3> 
+                  </button>
+            </div>
+
+        </form>
+    
+        <!-- <div id="loader" style="display: none;">Loading...</div> -->
+        <div id="downloader" style="display: none;">Downloading...</div>    
+      
+    </div>
+  
+
+    <style>
+        #mainBorder {
+         padding: 20px 40px;
+        }
+        #convert-button {
+          border: 2px solid #0073C8;
+          background-color: #97DAFF;
+          /* Adjust the button size to medium as per your design requirements, here's an example: */
+          padding: 0px 40px;
+          font-size: 1em;
+          
+        }
+        #upload-button {
+          border: 2px solid #12A742;
+          background-color: #9FF4B6;
+          /* Adjust the button size to medium as per your design requirements, here's an example: */
+          padding: 0px 40px;
+          
+        }
+        #upload-button:hover {
+          background-color: #12A742;
+          /* Adjust the button size to medium as per your design requirements, here's an example: */
+          
+        }
+        #convert-button:hover {
+          background-color: #67abdf;
+          /* Adjust the button size to medium as per your design requirements, here's an example: */
+          font-size: 1em;          
+        }
+        #url-input {
+            padding: 10px; /* Set padding of the input */
+            font-size: 1.5em; /* Set font size to h2 equivalent */
+            background-color: #E8ECEF;
+            color: black; /* Set background color to green */
+        }
+      </style>
 
     <script>
         const convertButton = document.getElementById('convert-button');
         const loader = document.getElementById('loader');
+        const downloadingMessage = document.getElementById('downloading-message');        
+        const downloadMessage = document.getElementById('download-message');        
+
         const uploadButton = document.getElementById('upload-button');
+        const urlInput = document.getElementById('url-input');
         const downloader = document.getElementById('downloader');
+        const urlRegex = /\/docsend\.com\/view\//;
         convertButton.addEventListener('click', function(event) {
             loader.style.display = 'block';  // Show loading icon
+            convertButton.style.display = 'none';
 
             const url = document.getElementById('url-input').value;
             const data = { url: url };
+            document.getElementById('error-message').style.display = 'none';
+            const errorMessage = document.getElementById('error-message');
+            const normalMessage = document.getElementById('normal-message');
 
             console.log(data);
             // fetch('http://127.0.0.1:5000/convert', {
-            fetch('http://127.0.0.1:5000/convert', {
+
+                
+            if (urlRegex.test(url)) {
+                console.log("suces");
+                // Your conversion logic goes here when the URL is valid
+                loader.style.display = 'block';  // Hide loading icon when done
+                // You would also handle showing the downloader or upload button here
+//                fetch('https://7124-188-43-253-73.ngrok-free.app/convert', {
+               errorMessage.style.display = 'none';
+               normalMessage.style.display = 'none'; 
+               urlInput.style.display = 'none';
+               downloadingMessage.style.display = 'block';
+                fetch('http://127.0.0.1:5000/convert', {
+
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(data),
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Success:', data);
-                loader.style.display = 'none';  // Hide loading icon
-                uploadButton.style.display = 'block';  // Show upload button
-                uploadButton.addEventListener('click', function() {
-//                    window.location.href = data.pdf_url;  // Trigger PDF download
-                downloader.style.display = 'block'; 
-                fetch('http://127.0.0.1:5000/download/' + data.pdf_id, {
-                            method: 'GET'
-                        })
-                        .then(response => response.blob())
-                        .then(blob => {
-                            const url = window.URL.createObjectURL(new Blob([blob]));
-                            const a = document.createElement('a');
-                            a.href = url;
-                            a.download = 'converted.pdf';
-                            document.body.appendChild(a);
-                            a.click();
-                            window.URL.revokeObjectURL(url);
-                            document.body.removeChild(a);
-                            downloader.style.display = 'none';
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            
-                            // Hide loading icon in case of error
-                            downloader.style.display = 'none';
-                        });
-                });
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-                loader.style.display = 'none';  // Hide loading icon on error
-            });
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Success:', data);
+                    loader.style.display = 'none';  // Hide loading icon
+                    uploadButton.style.display = 'block';  // Show upload button
+                    downloadMessage.style.display = 'block';
+                    downloadingMessage.style.display = 'none';   
+                    urlInput.style.display = 'none';                 
+                    uploadButton.addEventListener('click', function() {
+    //                    window.location.href = data.pdf_url;  // Trigger PDF download
+                    downloader.style.display = 'block'; 
+                    fetch('http://127.0.0.1:5000/download/' + data.pdf_id, {
+                                method: 'GET'
+                            })
+                            .then(response => response.blob())
+                            .then(blob => {
+                                const url = window.URL.createObjectURL(new Blob([blob]));
+                                const a = document.createElement('a');
+                                a.href = url;
+                                a.download = 'converted.pdf';
+                                document.body.appendChild(a);
+                                a.click();
+                                window.URL.revokeObjectURL(url);
+                                document.body.removeChild(a);
+                                downloader.style.display = 'none';
+
+
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                
+                                // Hide loading icon in case of error
+                                downloader.style.display = 'none';
+                            });
+                    });
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                    loader.style.display = 'none';  // Hide loading icon on error
+                });                
+            } else {
+                // Show error message if URL is invalid
+                loader.style.display = 'none';
+                // errorMessage.textContent = 'Please enter a valid DocSend URL';
+                errorMessage.style.display = 'block'; // Show error message
+                normalMessage.style.display = 'none';                         
+            }            
         });
     </script>
 </body>
