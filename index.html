@@ -123,7 +123,7 @@
                normalMessage.style.display = 'none'; 
                urlInput.style.display = 'none';
                downloadingMessage.style.display = 'block';
-               fetch('https://2627-18-118-218-235.ngrok-free.app/convert', {
+               fetch('https://4c5c-18-118-218-235.ngrok-free.app/convert', {
 //                fetch('http://127.0.0.1:5000/convert', {
 
                 method: 'POST',
@@ -144,7 +144,7 @@
     //                    window.location.href = data.pdf_url;  // Trigger PDF download
                     downloader.style.display = 'block'; 
                     // data.pdf_id = '65ce3f8794b440ffb908769d';
-                    fetch('https://2627-18-118-218-235.ngrok-free.app/download/' + data.pdf_id, {
+                    fetch('https://4c5c-18-118-218-235.ngrok-free.app/download/' + data.pdf_id, {
                                 method: 'GET'
                             })
                             .then(response => response.blob())
