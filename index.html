@@ -98,7 +98,7 @@
         const uploadButton = document.getElementById('upload-button');
         const urlInput = document.getElementById('url-input');
         const downloader = document.getElementById('downloader');
-        const urlRegex = /\/docsend\.com\/view\//;
+        let urlRegex = /docsend\.com\/view\//;
         convertButton.addEventListener('click', function(event) {
             loader.style.display = 'block';  // Show loading icon
             convertButton.style.display = 'none';
@@ -123,8 +123,8 @@
                normalMessage.style.display = 'none'; 
                urlInput.style.display = 'none';
                downloadingMessage.style.display = 'block';
-//                fetch('https://2627-18-118-218-235.ngrok-free.app/convert', {
-                fetch('http://127.0.0.1:5000/convert', {
+               fetch('https://2627-18-118-218-235.ngrok-free.app/convert', {
+//                fetch('http://127.0.0.1:5000/convert', {
 
                 method: 'POST',
                 headers: {
@@ -144,7 +144,7 @@
     //                    window.location.href = data.pdf_url;  // Trigger PDF download
                     downloader.style.display = 'block'; 
                     // data.pdf_id = '65ce3f8794b440ffb908769d';
-                    fetch('http://127.0.0.1:5000/download/' + data.pdf_id, {
+                    fetch('https://2627-18-118-218-235.ngrok-free.app/download/' + data.pdf_id, {
                                 method: 'GET'
                             })
                             .then(response => response.blob())

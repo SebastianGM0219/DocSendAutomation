@@ -84,11 +84,16 @@ def download_pdf(pdf_id):
         if not pdf_data:
             return jsonify({'error': 'File not found'}), 404
 
-        def generate():
-            yield pdf_data['content']
-        return Response(stream_with_context(generate()), mimetype='application/pdf',
+        def generate(content):
+            # Let's assume here that pdf_data['content'] is in binary format.
+            # Divide the content into chunks and yield them.
+            chunk_size = 1024  # You could change this to another size
+            for start in range(0, len(content), chunk_size):
+                yield content[start:start + chunk_size]
+
+        return Response(stream_with_context(generate(pdf_data['content'])), mimetype='application/pdf',
                         headers={'Content-Disposition': 'attachment;filename={}.pdf'.format(pdf_id)})
-    except Exception as e:  
+    except Exception as e:
         return jsonify({'error': str(e)}), 500
     
 @app.route('/convert', methods=['POST'])

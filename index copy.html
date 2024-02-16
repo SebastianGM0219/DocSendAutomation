@@ -99,31 +99,68 @@
         const urlInput = document.getElementById('url-input');
         const downloader = document.getElementById('downloader');
         const urlRegex = /\/docsend\.com\/view\//;
-        uploadButton.addEventListener('click', function(event){
-            fetch('http://127.0.0.1:5000/download/' + '65ce604dc295e3fc9ea37429', {
-                                method: 'GET'
-                            })
-                            .then(response => response.blob())
-                            .then(blob => {
-                                const url = window.URL.createObjectURL(new Blob([blob]));
-                                const a = document.createElement('a');
-                                a.href = url;
-                                a.download = 'converted.pdf';
-                                document.body.appendChild(a);
-                                a.click();
-                                window.URL.revokeObjectURL(url);
-                                document.body.removeChild(a);
-                                downloader.style.display = 'none';
+        uploadButton.addEventListener('click', function(event) {
+            fetch('https://4c5c-18-118-218-235.ngrok-free.app/download/65ce604dc295e3fc9ea37429', {
+                method: 'GET'
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok.');
+                }
+                // The reader provides a way to read through the stream sequentially
+                const reader = response.body.getReader();
+                
+                // we gather all chunks into this array
+                const chunks = [];
 
+                // Here we fetch chunks in a loop, asynchronously
+                function fetchNextChunk() {
+                    reader.read().then(({ done, value }) => {
+                        if (done) {
+                            // All chunks have been fetched, we can now convert to blob
+                            const blob = new Blob(chunks, { type: 'application/pdf' });
+                            download(blob);
+                            return;
+                        }
+                        // If not done, you have a chunk in value, push it to the chunks array
+                        chunks.push(value);
+                        // And fetch the next chunk
+                        fetchNextChunk();
+                    });
+                }
+                // Start fetching chunks
+                fetchNextChunk();
+            })
+            .catch(error => {
+                console.error('There has been a problem with your fetch operation:', error);
+            });
+        });
 
-                            })
-                            .catch(error => {
-                                console.error('Error:', error);
-                                
-                                // Hide loading icon in case of error
-                                downloader.style.display = 'none';
-                            });            
-        })
+        function download(blob){
+    // Create a new link element
+    const a = document.createElement('a');
+
+    // Create a URL for the blob object
+    const url = window.URL.createObjectURL(blob);
+
+    // Set href to the object URL and download attribute to filename
+    a.href = url;
+    a.download = 'downloaded.pdf'; // You can name the PDF here
+
+    // Append the link to the body
+    document.body.appendChild(a);
+
+    // Simulate a click on the link to trigger the download
+    a.click();
+
+    // Clean up by revoking the Object URL and removing the link element
+    setTimeout(() => {
+        window.URL.revokeObjectURL(url);
+        if (a.parentNode) {
+            a.parentNode.removeChild(a);
+        }
+    }, 100); // Use timeout to ensure revoking and removal happen after the download
+}
         convertButton.addEventListener('click', function(event) {
             loader.style.display = 'block';  // Show loading icon
             convertButton.style.display = 'none';
