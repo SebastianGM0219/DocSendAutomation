@@ -98,13 +98,13 @@ def download_pdf(pdf_id):
         )
         
         # Save the PDF file locally
-        with open('downloaded_{}.pdf'.format(pdf_id), 'wb') as f:
-            for chunk in generate(pdf_data['content']):
-                f.write(chunk)
+        # with open('downloaded_{}.pdf'.format(pdf_id), 'wb') as f:
+        #     for chunk in generate(pdf_data['content']):
+        #         f.write(chunk)
 
-        return response
-        # return Response(stream_with_context(generate(pdf_data['content'])), mimetype='application/pdf',
-        #                 headers={'Content-Disposition': 'attachment;filename={}.pdf'.format(pdf_id)})
+        # return response
+        return Response(stream_with_context(generate(pdf_data['content'])), mimetype='application/pdf',
+                        headers={'Content-Disposition': 'attachment;filename={}.pdf'.format(pdf_id)})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
     

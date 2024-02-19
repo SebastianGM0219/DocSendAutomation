@@ -12,30 +12,30 @@
         <form id="url-form">
             <input type="text" id="url-input" placeholder="https://docsend.com/...">            
             <div id="error-message" style="display: none; color: red;">
-                <h2>Please enter a valid DocSend Url</h2>
+                <p>Please enter a valid DocSend Url</p>
             </div>
             <div id="normal-message" style="display: block; color: black;">
-                <h2>Enter the DocSend link above</h2>
+                <p>Enter the DocSend link above</p>
             </div>
 
             <div id="loader" style="display: none;">
-                <img src="spin_main.gif" alt="Loading..." />
+                <img src="Spinner-1.2s-61px.gif" alt="Loading..." />
             </div>        
     
             <div id="downloading-message" style="display: none; color: black;">
-                <h2>Converting the document</h2>
-                <h2>This can take up to 1 minute</h2>
+                <p>Converting the document</p>
+                <p>This can take up to 1 minute</p>
             </div>
 
             <div id="download-message" style="display: none; color: black;">
-                <h2>Click the button to download your PDF</h2>
+                <p>Click the button to download your PDF</p>
             </div>
 
             <div>
-                <button type="button" id="convert-button">
+                <!-- <button type="button" id="convert-button">
                   <h3>
                     CONVERT
-                  </h3> 
+                  </h3>  -->
                 </button>
                 <button type="button" style = "display: none;" id="upload-button">
                     <h3>
@@ -69,12 +69,12 @@
           background-color: #9FF4B6;
           /* Adjust the button size to medium as per your design requirements, here's an example: */
           padding: 0px 40px;
-          
+          cursor: pointer;          
         }
         #upload-button:hover {
           background-color: #12A742;
           /* Adjust the button size to medium as per your design requirements, here's an example: */
-          
+          cursor: pointer;
         }
         #convert-button:hover {
           background-color: #67abdf;
@@ -90,7 +90,7 @@
       </style>
 
     <script>
-        const convertButton = document.getElementById('convert-button');
+//        const convertButton = document.getElementById('convert-button');
         const loader = document.getElementById('loader');
         const downloadingMessage = document.getElementById('downloading-message');        
         const downloadMessage = document.getElementById('download-message');        
@@ -99,9 +99,11 @@
         const urlInput = document.getElementById('url-input');
         const downloader = document.getElementById('downloader');
         let urlRegex = /docsend\.com\/view\//;
-        convertButton.addEventListener('click', function(event) {
-            loader.style.display = 'block';  // Show loading icon
-            convertButton.style.display = 'none';
+        document.getElementById("url-input").addEventListener("keydown", function(event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                loader.style.display = 'block';  // Show loading icon
+//            convertButton.style.display = 'none';0
 
             const url = document.getElementById('url-input').value;
             const data = { url: url };
@@ -123,7 +125,7 @@
                normalMessage.style.display = 'none'; 
                urlInput.style.display = 'none';
                downloadingMessage.style.display = 'block';
-               fetch('https://4c5c-18-118-218-235.ngrok-free.app/convert', {
+               fetch('https://c920-18-118-218-235.ngrok-free.app/convert', {
 //                fetch('http://127.0.0.1:5000/convert', {
 
                 method: 'POST',
@@ -144,8 +146,8 @@
     //                    window.location.href = data.pdf_url;  // Trigger PDF download
                     downloader.style.display = 'block'; 
                     // data.pdf_id = '65ce3f8794b440ffb908769d';
-                    fetch('https://4c5c-18-118-218-235.ngrok-free.app/download/' + data.pdf_id, {
-                                method: 'GET'
+                    fetch('https://c920-18-118-218-235.ngrok-free.app/download/' + data.pdf_id, {
+                                method: 'POST'
                             })
                             .then(response => response.blob())
                             .then(blob => {
@@ -180,6 +182,7 @@
                 errorMessage.style.display = 'block'; // Show error message
                 normalMessage.style.display = 'none';                         
             }            
+            }          
         });
     </script>
 </body>
