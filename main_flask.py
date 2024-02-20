@@ -22,8 +22,8 @@ CORS(app)
 #cors = CORS(app)
 # app.config['CORS_HEADERS'] = 'Content-Type'
 # CORS(app, resources={r"/convert": {"origins": "*"}})
-mongo_client = MongoClient("mongodb+srv://adinbo:ElectionsApp2023@cluster0.etzh8ey.mongodb.net/?retryWrites=true&w=majority")
-db = mongo_client["pdfdatabase"]
+mongo_client = MongoClient("mongodb+srv://mbrown87:a-X4JoZ-JspDLpo@cluster0.stgvned.mongodb.net/?retryWrites=true&w=majority")
+db = mongo_client["DocSendDataBase"]
 # fs = gridfs.GridFS(db)
 collection = db["pdf"]
 
@@ -53,8 +53,8 @@ def hello_world1():
 def test_db_connection():
     print("test_db_connection")
     try:
-        client = MongoClient("mongodb+srv://adinbo:ElectionsApp2023@cluster0.etzh8ey.mongodb.net/?retryWrites=true&w=majority")
-        db1 = client.pdfdatabase  # Access the pdfdatabase  
+        client = MongoClient("mongodb+srv://mbrown87:a-X4JoZ-JspDLpo@cluster0.stgvned.mongodb.net/?retryWrites=true&w=majority")
+        db1 = client.DocSendDataBase  # Access the pdfdatabase  
         # Check if the connection is successful by accessing a collection
         pdf_collection = db1.pdf
         print( "Successfully connected to database!")
@@ -76,7 +76,7 @@ def test_db_connection():
 #         return jsonify({'error': str(e)}), 500
 
 
-@app.route('/download/<pdf_id>', methods=['GET'])
+@app.route('/download/<pdf_id>', methods=['POST'])
 def download_pdf(pdf_id):
     pdf_collection = test_db_connection()
     try:
@@ -105,6 +105,18 @@ def download_pdf(pdf_id):
         # return response
         return Response(stream_with_context(generate(pdf_data['content'])), mimetype='application/pdf',
                         headers={'Content-Disposition': 'attachment;filename={}.pdf'.format(pdf_id)})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/show_all', methods=['POST'])
+def show_pdfs():
+    pdf_collection = test_db_connection()
+    
+    try:
+        pdf_documents = pdf_collection.find({})
+        pdf_list = [{'id': str(doc['_id'])} for doc in pdf_documents]  # Extracting the IDs and converting them to strings
+
+        return jsonify(pdf_list), 200  # Returning the list as JSON
     except Exception as e:
         return jsonify({'error': str(e)}), 500
     

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Convert URL to PDF</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        #mainBorder {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        button {
+            border: none;
+            padding: 8px 15px;
+            background-color: #007bff;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .spinner {
+            border: 4px solid rgba(0,0,0,.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: #09f;
+            animation: spin 1s ease infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+    </style>
+</head>
+<body>
+    <div id="mainBorder">
+        <div><h1>DS2PDF</h1></div>
+        <div><h2>Convert DocSend links to a PDF</h2></div>
+
+
+        <h2>PDF Collection</h2>
+        <table id="pdf-table">
+            
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Download</th>
+                </tr>
+
+            </thead>
+            <tbody>
+                <span id="spinner" class="spinner" style="display: none;"></span>
+
+                <!-- PDF table content will be inserted here dynamically -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        const downloader = document.getElementById('downloader');
+        
+        function toggleDownloadBtnSpinner(button, showSpinner = true) {
+            const spinner = button.parentNode.querySelector('.spinner');
+
+            if (showSpinner) {
+                button.style.display = 'none';
+                spinner.style.display = 'inline-block';
+            } else {
+                button.style.display = 'inline-block';
+                spinner.style.display = 'none';
+            }
+        }
+        
+  
+            document.getElementById('spinner').style.display = 'block';
+            fetch('https://c920-18-118-218-235.ngrok-free.app/show_all',{method: 'POST'})  // Adjust the endpoint as needed
+//        fetch('http://127.0.0.1:5000/show_all',{method: 'POST'})  // Adjust the endpoint as needed
+            .then(response => response.json())
+            .then(data => {
+                const tbody = document.querySelector('#pdf-table tbody');
+                
+                data.forEach(pdf => {
+                    const row = document.createElement('tr');
+                    
+                    const idCell = document.createElement('td');
+                    idCell.textContent = pdf.id + '.pdf';
+                    row.appendChild(idCell);
+
+                    const downloadCell = document.createElement('td');
+                    const downloadButton = document.createElement('button');
+                    downloadButton.textContent = 'Download';
+                    const spinner = document.createElement('div');
+                    spinner.className = 'spinner';
+                    spinner.style.display = 'none'; // initially hidden
+                        
+                    downloadButton.onclick = function() {
+                        toggleDownloadBtnSpinner(downloadButton);
+                        fetch('https://c920-18-118-218-235.ngrok-free.app/download/' + pdf.id, {
+ //                       fetch('http://127.0.0.1:5000/download/' + pdf.id, {
+                                method: 'POST'
+                            })
+                            .then(response => {
+                                toggleDownloadBtnSpinner(downloadButton, false);
+                                return response.blob();
+                            })
+                            .then(blob => {
+                                const url = window.URL.createObjectURL(new Blob([blob]));
+                                const a = document.createElement('a');
+                                a.href = url;
+                                a.download = pdf.id+'.pdf';
+                                document.body.appendChild(a);
+                                a.click();
+                                window.URL.revokeObjectURL(url);
+                                document.body.removeChild(a);
+                                downloader.style.display = 'none';
+
+                            })
+                            .catch(error => {
+                                toggleDownloadBtnSpinner(downloadButton, false);
+                                // alert('Download failed');
+                            });                        
+                    };
+                    downloadCell.appendChild(downloadButton);
+                    downloadCell.appendChild(spinner);
+                    row.appendChild(downloadCell);
+
+                    tbody.appendChild(row);
+                });
+                document.getElementById('spinner').style.display = 'none';
+
+            })
+            .catch(error => {
+                document.getElementById('spinner').style.display = 'none';
+                console.error('There was an error!', error);
+            });
+    </script>
+</body>
+</html>

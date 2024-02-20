@@ -124,7 +124,7 @@
                urlInput.style.display = 'none';
                downloadingMessage.style.display = 'block';
                fetch('https://c920-18-118-218-235.ngrok-free.app/convert', {
-//                fetch('http://127.0.0.1:5000/convert', {
+            //    fetch('http://127.0.0.1:5000/convert', {
 
                 method: 'POST',
                 headers: {
@@ -145,6 +145,7 @@
                     downloader.style.display = 'block'; 
                     // data.pdf_id = '65ce3f8794b440ffb908769d';
                     fetch('https://c920-18-118-218-235.ngrok-free.app/download/' + data.pdf_id, {
+                        // fetch('http://127.0.0.1:5000/download/' + data.pdf_id, {
                                 method: 'POST'
                             })
                             .then(response => response.blob())
@@ -152,7 +153,7 @@
                                 const url = window.URL.createObjectURL(new Blob([blob]));
                                 const a = document.createElement('a');
                                 a.href = url;
-                                a.download = 'converted.pdf';
+                                a.download = data.pdf_id+'.pdf';
                                 document.body.appendChild(a);
                                 a.click();
                                 window.URL.revokeObjectURL(url);
