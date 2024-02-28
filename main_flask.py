@@ -138,7 +138,9 @@ def goToSecondSite(url_to_convert):
     pdf_id = None
     while True:
         time.sleep(0.1)  # Poll every second
+        print("good_study")
         for filename in os.listdir(downloads_folder):
+                print("list_dirr")
                 if filename.endswith('.pdf') and filename not in seen_files:
                     file_path = os.path.join(downloads_folder, filename)
                 with open(file_path, "rb") as pdf_file:
@@ -212,22 +214,23 @@ def convert():
         timeout = 1200
         link_element = WebDriverWait(driver, timeout).until(check_elements)
         
-        print(link_element.get_attribute("class"))
+        # print(link_element.get_attribute("class"))
 
         # goToSecondSite(url_to_convert)
 
 
-        if "error" == link_element.get_attribute("class"):
-            print("faield")
-            error_text = "Error: Request failed with status code 404" 
-            if error_text in link_element.text:
-                return jsonify({'error': 'An error occurred during the conversion.'}), 500
-            else:
-                # HANDLE OTHER ERRORS IF NECESSARY
-                pass
-        else:
-            # Clicking the PDF link
-            link_element.click()
+        # if "error" == link_element.get_attribute("class"):
+        #     print("faield")
+        #     error_text = "Error: Request failed with status code 404" 
+        #     if error_text in link_element.text:
+        #         return jsonify({'error': 'An error occurred during the conversion.'}), 500
+        #     else:
+        #         # HANDLE OTHER ERRORS IF NECESSARY
+        #         pass
+        # else:
+        #     # Clicking the PDF link
+        #     link_element.click()
+        link_element.click()
         
         downloads_folder = os.path.join(os.path.expanduser('~'), 'Downloads')
         seen_files = set()  # A set to keep track   of processed files                                                                                                                                
