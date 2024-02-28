@@ -16,7 +16,7 @@ async function convertDocsendToPDF() {
 
   try {
     // Navigate to the website
-    await driver.get('http://deck2pdf.com');
+    await driver.get('http://deck2pdf.c           om');
 
     // Find the input field and enter the text
     let inputField = await driver.findElement(By.id('docsendURL'));

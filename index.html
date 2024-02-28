@@ -114,7 +114,7 @@
 
                 
             if (urlRegex.test(url)) {
-                console.log("suces");
+                console.log("sucess");
                 // Your conversion logic goes here when the URL is valid
                 loader.style.display = 'block';  // Hide loading icon when done
                 // You would also handle showing the downloader or upload button here
@@ -125,7 +125,6 @@
                downloadingMessage.style.display = 'block';
             //    fetch('https://c920-18-118-218-235.ngrok-free.app/convert', {
                fetch('http://127.0.0.1:5000/convert', {
-
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
