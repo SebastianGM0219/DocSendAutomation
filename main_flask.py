@@ -45,8 +45,10 @@ def test_db_connection():
     print("test_db_connection")
     try:
         client = MongoClient("mongodb+srv://mbrown87:a-X4JoZ-JspDLpo@cluster0.stgvned.mongodb.net/?retryWrites=true&w=majority")
-        db1 = client.DocSendDataBase  # Access the pdfdatabase
+        db1 = client.DocSendDataBase  # Access the pdfdatabase  
+        # Check if the connection is successful by accessing a collection
         pdf_collection = db1.pdf
+        print( "Successfully connected to database!")
         return pdf_collection
     
     except Exception as e:
@@ -219,49 +221,57 @@ def convert():
         # goToSecondSite(url_to_convert)
 
 
-        # if "error" == link_element.get_attribute("class"):
-        #     print("faield")
-        #     error_text = "Error: Request failed with status code 404" 
-        #     if error_text in link_element.text:
-        #         return jsonify({'error': 'An error occurred during the conversion.'}), 500
-        #     else:
-        #         # HANDLE OTHER ERRORS IF NECESSARY
-        #         pass
-        # else:
-        #     # Clicking the PDF link
-        #     link_element.click()
-        link_element.click()
-        
-        downloads_folder = os.path.join(os.path.expanduser('~'), 'Downloads')
-        seen_files = set()  # A set to keep track   of processed files                                                                                                                                
+        if "error" == link_element.get_attribute("class"):
+            print("faield")
+            error_text = "Error: Request failed with status code 404" 
+            if error_text in link_element.text:
+                return jsonify({'error': 'An error occurred during the conversion.'}), 500
+            else:
+                # HANDLE OTHER ERRORS IF NECESSARY
+                pass
+        else:
+            # Clicking the PDF link
+            link_element.click()
+            
+            downloads_folder = os.path.join(os.path.expanduser('~'), 'Downloads')
+            seen_files = set()  # A set to keep track   of processed files
 
-        time.sleep(2)  # A slight delay to ensure the file is downloaded.
-        pdf_id = None
-        while True:
-            time.sleep(0.1)  # Poll every second
-            for filename in os.listdir(downloads_folder):
+            time.sleep(2)  # A slight delay to ensure the file is downloaded.
+
+            pdf_id = None
+            while True:
+                time.sleep(0.1)  # Poll every second
+                for filename in os.listdir(downloads_folder):
                     if filename.endswith('.pdf') and filename not in seen_files:
-                       file_path = os.path.join(downloads_folder, filename)
-                    with open(file_path, "rb") as pdf_file:
-                        binary_data = pdf_file.read()
-                        pdf_inserted = pdf_collection.insert_one({"url": url_to_convert, "content": binary_data})
-                        pdf_id = pdf_inserted.inserted_id
-                    os.remove(file_path)
+                        file_path = os.path.join(downloads_folder, filename)
+                        with open(file_path, "rb") as pdf_file:
+                            binary_data = pdf_file.read()
+                            pdf_inserted = pdf_collection.insert_one({"url": url_to_convert, "content": binary_data})
+                            pdf_id = pdf_inserted.inserted_id
+                        os.remove(file_path)  # Optionally remove the file after processing                    
+                        break
+                        # pdf_inserted = pdf_collection.insert_one({"url": url_to_convert, "content": binary_data})
+                if pdf_id is not None: 
+                    print(pdf_id)
+                    print("Success")
+                    return jsonify({'message': 'PDF converted and saved to MongoDB', 'pdf_id': str(pdf_id)}), 200                          
                     break
-
-            if pdf_id is not None: 
-                print(pdf_id)
-                print("Success")
-    
-                return jsonify({'message': 'PDF converted and saved to MongoDB', 'pdf_id': str(pdf_id)}), 200 
+            
+            print("Sucess")
+            return jsonify({'message': 'PDF converted and saved to MongoDB'}), 200
+                # return jsonify({'message': 'PDF converted and saved to MongoDB', 'pdf_id': str(pdf_id)}), 200
 
 
+
+                    # print(f"Success: {filename} opened and data inserted successfully")
+
+        # pdf_collection.insert_one({"file_data": "binary_data"})
     except TimeoutException:
-        print(f"Timeout occurred after {3} seconds while waiting for the PDF download link.")
+        print(f"Timeout occurred after {timeout} seconds while waiting for the PDF download link.")
         return jsonify({'error': 'Timeout occurred while waiting for the PDF download link.'}), 500
     except Exception as e:
         return jsonify({'error': f'An error occurred: {e}'}), 500
-
+    
 if __name__ == '__main__':
     app.run(debug=True)    
 
