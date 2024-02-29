@@ -103,6 +103,8 @@ def check_elements(driver):
             return False
 
 def goToSecondSite(url_to_convert):
+    pdf_collection = test_db_connection()
+
     downloads_folder = os.path.join(os.path.expanduser('~'), 'Downloads')    
     # download_directory = '/downloads/'
     chrome_options.add_experimental_option('prefs', {
@@ -113,7 +115,6 @@ def goToSecondSite(url_to_convert):
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
     driver.get("https://docsend2pdf.com/")
 
-    pdf_collection = test_db_connection()
     input_field = driver.find_element(By.NAME, 'url')
     input_field.send_keys(url_to_convert)
 
@@ -134,29 +135,28 @@ def goToSecondSite(url_to_convert):
     convert_button.click()
 
     downloads_folder = os.path.join(os.path.expanduser('~'), 'Downloads')
-    seen_files = set()  # A set to keep track   of processed files                                                                                                                                
+    seen_files = set()  # A set to keep track   of processed files
 
-    time.sleep(100)  # A slight delay to ensure the file is downloaded.
+    time.sleep(2)  # A slight delay to ensure the file is downloaded.
+
     pdf_id = None
     while True:
         time.sleep(0.1)  # Poll every second
-        print("good_study")
         for filename in os.listdir(downloads_folder):
-                print("list_dirr")
-                if filename.endswith('.pdf') and filename not in seen_files:
-                    file_path = os.path.join(downloads_folder, filename)
+            if filename.endswith('.pdf') and filename not in seen_files:
+                file_path = os.path.join(downloads_folder, filename)
                 with open(file_path, "rb") as pdf_file:
                     binary_data = pdf_file.read()
                     pdf_inserted = pdf_collection.insert_one({"url": url_to_convert, "content": binary_data})
                     pdf_id = pdf_inserted.inserted_id
-                os.remove(file_path)
+                os.remove(file_path)  # Optionally remove the file after processing                    
                 break
-
+                # pdf_inserted = pdf_collection.insert_one({"url": url_to_convert, "content": binary_data})
         if pdf_id is not None: 
             print(pdf_id)
             print("Success")
-            return jsonify({'message': 'PDF converted and saved to MongoDB', 'pdf_id': str(pdf_id)}), 200 
-            
+            return pdf_id
+            break            
         #     
     # wait = WebDriverWait(driver, 100)
     # wait.until(EC.presence_of_element_located((By.ID, 'download')))
@@ -203,63 +203,61 @@ def convert():
         url_to_convert = data.get('url')
         pdf_collection = test_db_connection()
 
-        if not url_to_convert:
-            return jsonify({'error': 'No URL provided'}), 400
+        # if not url_to_convert:
+        #     return jsonify({'error': 'No URL provided'}), 400
         
-        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
-        driver.get("http://deck2pdf.com")
-        input_field = driver.find_element(By.ID, 'docsendURL')
-        input_field.send_keys(url_to_convert)
-        convert_button = driver.find_element(By.CLASS_NAME, 'btn-primary')
-        convert_button.click()
+        # driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+        # driver.get("http://deck2pdf.com")
+        # input_field = driver.find_element(By.ID, 'docsendURL')
+        # input_field.send_keys(url_to_convert)
+        # convert_button = driver.find_element(By.CLASS_NAME, 'btn-primary')
+        # convert_button.click()
 
-        timeout = 1200
-        link_element = WebDriverWait(driver, timeout).until(check_elements)
+        # timeout = 1200
+        # link_element = WebDriverWait(driver, timeout).until(check_elements)
         
-        # print(link_element.get_attribute("class"))
+        pdf_id= goToSecondSite(url_to_convert)
+        return jsonify({'message': 'PDF converted and saved to MongoDB', 'pdf_id': str(pdf_id)}), 200                          
 
-        # goToSecondSite(url_to_convert)
 
-
-        if "error" == link_element.get_attribute("class"):
-            print("faield")
-            error_text = "Error: Request failed with status code 404" 
-            if error_text in link_element.text:
-                return jsonify({'error': 'An error occurred during the conversion.'}), 500
-            else:
-                # HANDLE OTHER ERRORS IF NECESSARY
-                pass
-        else:
-            # Clicking the PDF link
-            link_element.click()
+        # if "error" == link_element.get_attribute("class"):
+        #     print("faield")
+        #     error_text = "Error: Request failed with status code 404" 
+        #     if error_text in link_element.text:
+        #         return jsonify({'error': 'An error occurred during the conversion.'}), 500
+        #     else:
+        #         # HANDLE OTHER ERRORS IF NECESSARY
+        #         pass
+        # else:
+        #     # Clicking the PDF link
+        #     link_element.click()
             
-            downloads_folder = os.path.join(os.path.expanduser('~'), 'Downloads')
-            seen_files = set()  # A set to keep track   of processed files
+        #     downloads_folder = os.path.join(os.path.expanduser('~'), 'Downloads')
+        #     seen_files = set()  # A set to keep track   of processed files
 
-            time.sleep(2)  # A slight delay to ensure the file is downloaded.
+        #     time.sleep(2)  # A slight delay to ensure the file is downloaded.
 
-            pdf_id = None
-            while True:
-                time.sleep(0.1)  # Poll every second
-                for filename in os.listdir(downloads_folder):
-                    if filename.endswith('.pdf') and filename not in seen_files:
-                        file_path = os.path.join(downloads_folder, filename)
-                        with open(file_path, "rb") as pdf_file:
-                            binary_data = pdf_file.read()
-                            pdf_inserted = pdf_collection.insert_one({"url": url_to_convert, "content": binary_data})
-                            pdf_id = pdf_inserted.inserted_id
-                        os.remove(file_path)  # Optionally remove the file after processing                    
-                        break
-                        # pdf_inserted = pdf_collection.insert_one({"url": url_to_convert, "content": binary_data})
-                if pdf_id is not None: 
-                    print(pdf_id)
-                    print("Success")
-                    return jsonify({'message': 'PDF converted and saved to MongoDB', 'pdf_id': str(pdf_id)}), 200                          
-                    break
+        #     pdf_id = None
+        #     while True:
+        #         time.sleep(0.1)  # Poll every second
+        #         for filename in os.listdir(downloads_folder):
+        #             if filename.endswith('.pdf') and filename not in seen_files:
+        #                 file_path = os.path.join(downloads_folder, filename)
+        #                 with open(file_path, "rb") as pdf_file:
+        #                     binary_data = pdf_file.read()
+        #                     pdf_inserted = pdf_collection.insert_one({"url": url_to_convert, "content": binary_data})
+        #                     pdf_id = pdf_inserted.inserted_id
+        #                 os.remove(file_path)  # Optionally remove the file after processing                    
+        #                 break
+        #                 # pdf_inserted = pdf_collection.insert_one({"url": url_to_convert, "content": binary_data})
+        #         if pdf_id is not None: 
+        #             print(pdf_id)
+        #             print("Success")
+        #             return jsonify({'message': 'PDF converted and saved to MongoDB', 'pdf_id': str(pdf_id)}), 200                          
+        #             break
             
-            print("Sucess")
-            return jsonify({'message': 'PDF converted and saved to MongoDB'}), 200
-                # return jsonify({'message': 'PDF converted and saved to MongoDB', 'pdf_id': str(pdf_id)}), 200
+            # print("Sucess")
+        return jsonify({'message': 'PDF converted and saved to MongoDB'}), 200
 
 
 
