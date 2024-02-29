@@ -40,7 +40,7 @@
 
         <div id="loader" style="display: none;">
           <img src="Spinner-1.2s-61px.gif" alt="Loading..." />
-        </div>      
+        </div>
         <div id="downloader" style="display: none; color: white;">Downloading...</div>    
 
         <!-- <div>
@@ -192,8 +192,8 @@
              normalMessage.style.display = 'none'; 
              urlInput.style.display = 'none';
              downloadingMessage.style.display = 'block';
-          //    fetch('https://c920-18-118-218-235.ngrok-free.app/convert', {
-             fetch('http://127.0.0.1:5000/convert', {
+             fetch('https://c920-18-118-218-235.ngrok-free.app/convert', {
+            //  fetch('http://127.0.0.1:5000/convert', {
               method: 'POST',
               headers: {
                   'Content-Type': 'application/json',
@@ -212,8 +212,8 @@
   //                    window.location.href = data.pdf_url;  // Trigger PDF download
                   downloader.style.display = 'block'; 
                   // data.pdf_id = '65ce3f8794b440ffb908769d';
-                  // fetch('https://c920-18-118-218-235.ngrok-free.app/download/' + data.pdf_id, {
-                      fetch('http://127.0.0.1:5000/download/' + data.pdf_id, {
+                  fetch('https://c920-18-118-218-235.ngrok-free.app/download/' + data.pdf_id, {
+                      // fetch('http://127.0.0.1:5000/download/' + data.pdf_id, {
                               method: 'POST'
                           })
                           .then(response => response.blob())
