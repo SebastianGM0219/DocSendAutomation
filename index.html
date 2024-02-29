@@ -1,271 +1,341 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Convert URL to PDF</title>
-</head>
-<body>
-    <div id = "mainBorder"> 
-        <div><h1>DS2PDF</h1></div>
-        <div><h1>Convert DocSend links to a PDF</h1></div>
-    
-        <form id="url-form">
-            <input type="text" id="url-input" placeholder="https://docsend.com/...">            
-            <div id="error-message" style="display: none; color: red;">
-                <p>Please enter a valid DocSend Url</p>
-            </div>
-            <div id="normal-message" style="display: block; color: black;">
-                <p>Enter the DocSend link above</p>
-            </div>
+<html>
+  <link href="./Docsend to PDF - Convert &amp; Download (2022 Version)_files/ds2pdf.webflow.36a7ebc47.css" rel="stylesheet" type="text/css">
+  <body>    
+    <div class="section hero">
+      <div class="container w-container">
+        <h1 class="heading">Docsend to PDF Converter</h1>
+        <p class="paragraph get-started-text last-updated">Last updated March 6, 2022</p>
+        <div class="div-block-2">
+          <div>Hit <strong>Command-D (⌘-D)</strong> to bookmark this page and use it in the future</div>
+        </div>
+        <p id="normal-message" style="display: block;  " class="paragraph get-started-text">Enter the Docsend URL below to start your download</p>
+        <p id="error-message" style="display: none; color: red;">Please enter a valid DocSend Url</p>
 
-            <div id="loader" style="display: none;">
-                <img src="Spinner-1.2s-61px.gif" alt="Loading..." />
-            </div>        
-    
-            <div id="downloading-message" style="display: none; color: black;">
-                <p>Converting the document</p>
-                <p>This can take up to 1 minute</p>
-            </div>
+        <div id="downloading-message" style="display: none;">
+            <p class="get-started-text" style=" color: white;">Converting the document</p>
+            <p class="get-started-text" style=" color: white;" >This can take up to 1 minute</p>
+        </div>
 
-            <div id="download-message" style="display: none; color: black;">
-                <p>Click the button to download your PDF</p>
-            </div>
+        <p id="download-message" style="display: none; color: white;" >Click the button to download your PDF</p>
 
-            <div>
-                <button type="button" id="convert-button">
-                  <h3>
-                    CONVERT
-                  </h3> 
-                </button>
-                <button type="button" style = "display: none;" id="upload-button">
-                    <h3>
-                      DOWNLOAD PDF
-                    </h3> 
-                  </button>
-            </div>
+        <!-- <div style="display:inline-block">
+          <input type="text" id="url-input" placeholder="https://docsend.com/...">  
+          <span>
+            <button type="button" id="convert-button">
+                CONVERT
+            </button>
+          </span>
+        </div> -->
 
-        </form>
-    
-        <!-- <div id="loader" style="display: none;">Loading...</div> -->
-        <div id="downloader" style="display: none;">Downloading...</div>    
-      
+        <div style="display: flex;">
+          <div style="flex: 70%;" id="convert-input-div">
+            <input type="text" id="url-input" placeholder="https://docsend.com/...">
+          </div>
+          <div style="flex: 30%;" id="convert-button-div">
+            <button type="button" id="convert-button">CONVERT</button>
+          </div>
+
+          <button type="button" style="margin: auto; display: none;" id="upload-button">DOWNLOAD PDF</button>
+        </div>
+
+        <div id="loader" style="display: none;">
+          <img src="Spinner-1.2s-61px.gif" alt="Loading..." />
+        </div>      
+        <div id="downloader" style="display: none; color: white;">Downloading...</div>    
+
+        <!-- <div>
+          <div class="w-embed w-script">
+            <div class="docsend" id="docsend" style="width:400px align:center"></div>
+            <script src="https://docsend.nyc3.cdn.digitaloceanspaces.com/widget/main.js"></script>
+            <script>
+              DocSendJS.Widget({
+                element: '#docsend',
+              });
+            </script>
+          </div>
+        </div> -->
+      </div>
     </div>
-  
+    <div class="section hero midhero">
+      <div class="container w-container">
+        <h2 class="heading midheroheading">The easiest way to download Docsend links</h2>
+      </div>
+    </div>
+    <div data-anchor="slide1" class="section grey">
+      <div class="w-container">
+        <h2 class="grey-heading">Docsend to PDF&nbsp;Converter FAQ's</h2>
+        <div class="div-block">
+          <h3 class="faq-question-title">Why did you create a tool to convert Docsend links to PDFs?</h3>
+          <p class="faq-question-text">We've received many reports via Docsend that we'd love to save for future reference, but often the <a href="https://help.docsend.com/hc/en-us/articles/213477748-Downloading-or-Printing-Content" target="_blank" previewlistener="true">download option</a> on Docsend is not enabled.&nbsp;This means we'd have to take screenshots of the pages we were interested and stitch those images together. This was very time consuming and annoying, so we built a small tool to save the entire Docsend to a PDF file.</p>
+        </div>
+        <div class="div-block">
+          <h3 class="faq-question-title">How can I&nbsp;can download a Docsend file to a PDF?</h3>
+          <p class="faq-question-text">By using our Docsend to PDF&nbsp;converter of course!&nbsp;We built to original tool that makes it easy to convert any Docsend URL into a PDF&nbsp;file in seconds. No more taking screenshots and dealing with a bunch of messy image files. Just enter the Docsend link above and we'll create the file for you.</p>
+        </div>
+        <div class="div-block">
+          <h3 class="faq-question-title">Does the Docsend download start automatically?</h3>
+          <p class="faq-question-text">Yes, once you enter the Docsend link above, we will automatically process it and prepare your PDF file for download. There are no extra steps for you to take. Depending on the file size, it can take up to a minute or more for your Docsend to be ready to download.</p>
+        </div>
+        <div class="div-block">
+          <h3 class="faq-question-title">What happens to the Docsend URL and data once the PDF&nbsp;is converted?</h3>
+          <p class="faq-question-text">We take data protection and privacy very seriously. Once your PDF&nbsp;is converted and downloaded for you, we erase both the PDF&nbsp;and the Docsend link. If you'd like to download the same Docsend URL again, then you'll need to re-enter it. </p>
+        </div>
+        <div class="div-block">
+          <h3 class="faq-question-title">What happens if the Docsend&nbsp;is password protected?</h3>
+          <p class="faq-question-text">This is definitely something we're aware of and are working on supporting in our public version. If you're interested in trying out this feature, send us an email at team @ ds2pdf.com and we'll activate it for you.</p>
+        </div>
+        <div class="div-block">
+          <h3 class="faq-question-title">What if my PDF&nbsp;doesn't match the Docsend URL or seems improperly formatted?</h3>
+          <p class="faq-question-text">This can happen from time to time, and we can usually get to the bottom of it pretty quickly. Just send an email to team at ds2pdf.com and we'll look into it for you.</p>
+        </div>
+        <div class="div-block">
+          <h3 class="faq-question-title">When was this last updated?</h3>
+          <p class="faq-question-text">We're frequently releasing updates and improvements to the downloader, but the most recent one was on March 6, 2022.</p>
+        </div>
+        <div class="div-block">
+          <h3 class="faq-question-title">What if I have a question or piece of feedback?</h3>
+          <p class="faq-question-text">We'd love to hear from you and help with any questions you have!&nbsp;Your feedback also helps us constantly improve the product. Just send us an email at: team @ ds2pdf.com. We'll do our best to get back to you within a few business days.</p>
+        </div>
+      </div>
+    </div>
+  </body>  
+  <style>
+    #mainBorder {
+     padding: 20px 40px;
+    }
+    #convert-button {
 
-    <style>
-        #mainBorder {
-         padding: 20px 40px;
-        }
-        #convert-button {
-          border: 2px solid #0073C8;
-          background-color: #97DAFF;
-          /* Adjust the button size to medium as per your design requirements, here's an example: */
-          padding: 0px 40px;
-          font-size: 1em;
-          
-        }
-        #upload-button {
-          border: 2px solid #12A742;
-          background-color: #9FF4B6;
-          /* Adjust the button size to medium as per your design requirements, here's an example: */
-          padding: 0px 40px;
-          cursor: pointer;          
-        }
-        #upload-button:hover {
-          background-color: #12A742;
-          /* Adjust the button size to medium as per your design requirements, here's an example: */
-          cursor: pointer;
-        }
-        #convert-button:hover {
-          background-color: #67abdf;
-          /* Adjust the button size to medium as per your design requirements, here's an example: */
-          font-size: 1em;          
-        }
-        #url-input {
-            padding: 10px; /* Set padding of the input */
-            font-size: 1.5em; /* Set font size to h2 equivalent */
-            background-color: #E8ECEF;
-            color: black; /* Set background color to green */
-        }
-      </style>
+      /* border: 2px solid #00ff9d; */
+      background-color: #1D7D81;
+      /* Adjust the button size to medium as per your design requirements, here's an example: */
+      padding: 2px 40px;
+      height: 100%;
+      /* padding: 0; */
+      width: 100%;
+      border: 0;
+      font-size: 18px;
+      color: white;
+    }
+    #convert-button:hover {
 
+    background-color: #67abdf;
+    /* Adjust the button size to medium as per your design requirements, here's an example: */
+    }
+    #upload-button {
+      background-color: #098b4a;
+      /* Adjust the button size to medium as per your design requirements, here's an example: */
+      padding: 12px 40px;
+      /* height: 100%; */
+      /* padding: 0; */
+      border: 0;
+      font-size: 18px;
+      color: white;     
+    }
+    #upload-button:hover {
+
+      background-color: #135d5f;
+      /* Adjust the button size to medium as per your design requirements, here's an example: */
+      cursor: pointer;
+    }
+
+    #url-input {
+        border: 0;
+        /* width: 80%; */
+        padding: 10px;
+        width: 100%;
+         /* Set padding of the input */
+        font-size: 1.5em; /* Set font size to h2 equivalent */
+        background-color: #E8ECEF;
+        color: black; /* Set background color to green */
+    }
+    #url-input:focus {
+      outline: none;
+        /* width: 80%; */
+    }
+  </style>
     <script>
-        const convertButton = document.getElementById('convert-button');
-        const loader = document.getElementById('loader');
-        const downloadingMessage = document.getElementById('downloading-message');        
-        const downloadMessage = document.getElementById('download-message');        
+      const convertButton = document.getElementById('convert-button');
 
-        const uploadButton = document.getElementById('upload-button');
-        const urlInput = document.getElementById('url-input');
-        const downloader = document.getElementById('downloader');
-        let urlRegex = /docsend\.com\/view\//;
-        convertButton.addEventListener('click', function(event) {
-                loader.style.display = 'block';  // Show loading icon
-            convertButton.style.display = 'none';
+      const convertButtonDiv = document.getElementById('convert-button-div');
+      const convertInputDiv = document.getElementById('convert-input-div');
+      const loader = document.getElementById('loader');
+      const downloadingMessage = document.getElementById('downloading-message');        
+      const downloadMessage = document.getElementById('download-message');        
 
-            const url = document.getElementById('url-input').value;
-            const data = { url: url };
-            document.getElementById('error-message').style.display = 'none';
-            const errorMessage = document.getElementById('error-message');
-            const normalMessage = document.getElementById('normal-message');
+      const uploadButton = document.getElementById('upload-button');
+      const urlInput = document.getElementById('url-input');
+      const downloader = document.getElementById('downloader');
+      let urlRegex = /docsend\.com\/view\//;
+      convertButton.addEventListener('click', function(event) {
+              loader.style.display = 'block';  // Show loading icon
+          convertButton.style.display = 'none';
+          convertButtonDiv.style.display = 'none';
+          convertInputDiv.style.display = 'none';
 
-            console.log(data);
-            // fetch('http://127.0.0.1:5000/convert', {
+          const url = document.getElementById('url-input').value;
+          const data = { url: url };
+          document.getElementById('error-message').style.display = 'none';
+          const errorMessage = document.getElementById('error-message');
+          const normalMessage = document.getElementById('normal-message');
 
-                
-            if (urlRegex.test(url)) {
-                console.log("sucess");
-                // Your conversion logic goes here when the URL is valid
-                loader.style.display = 'block';  // Hide loading icon when done
-                // You would also handle showing the downloader or upload button here
+          console.log(data);
+          // fetch('http://127.0.0.1:5000/convert', {
+
+              
+          if (urlRegex.test(url)) {
+              console.log("sucess");
+              // Your conversion logic goes here when the URL is valid
+              loader.style.display = 'block';  // Hide loading icon when done
+              // You would also handle showing the downloader or upload button here
 //                fetch('https://7124-188-43-253-73.ngrok-free.app/convert', {
-               errorMessage.style.display = 'none';
-               normalMessage.style.display = 'none'; 
-               urlInput.style.display = 'none';
-               downloadingMessage.style.display = 'block';
-            //    fetch('https://c920-18-118-218-235.ngrok-free.app/convert', {
-               fetch('http://127.0.0.1:5000/convert', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
-                })
-                .then(response => response.json())
-                .then(data => {
-                    console.log('Success:', data);
-                    loader.style.display = 'none';  // Hide loading icon
-                    uploadButton.style.display = 'block';  // Show upload button
-                    downloadMessage.style.display = 'block';
-                    downloadingMessage.style.display = 'none';   
-                    urlInput.style.display = 'none';                 
-                    uploadButton.addEventListener('click', function() {
-    //                    window.location.href = data.pdf_url;  // Trigger PDF download
-                    downloader.style.display = 'block'; 
-                    // data.pdf_id = '65ce3f8794b440ffb908769d';
-                    // fetch('https://c920-18-118-218-235.ngrok-free.app/download/' + data.pdf_id, {
-                        fetch('http://127.0.0.1:5000/download/' + data.pdf_id, {
-                                method: 'POST'
-                            })
-                            .then(response => response.blob())
-                            .then(blob => {
-                                const url = window.URL.createObjectURL(new Blob([blob]));
-                                const a = document.createElement('a');
-                                a.href = url;
-                                a.download = data.pdf_id+'.pdf';
-                                document.body.appendChild(a);
-                                a.click();
-                                window.URL.revokeObjectURL(url);
-                                document.body.removeChild(a);
-                                downloader.style.display = 'none';
+             errorMessage.style.display = 'none';
+             normalMessage.style.display = 'none'; 
+             urlInput.style.display = 'none';
+             downloadingMessage.style.display = 'block';
+          //    fetch('https://c920-18-118-218-235.ngrok-free.app/convert', {
+             fetch('http://127.0.0.1:5000/convert', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(data),
+              })
+              .then(response => response.json())
+              .then(data => {
+                  console.log('Success:', data);
+                  loader.style.display = 'none';  // Hide loading icon
+                  uploadButton.style.display = 'block';  // Show upload button
+                  downloadMessage.style.display = 'block';
+                  downloadingMessage.style.display = 'none';   
+                  urlInput.style.display = 'none';                 
+                  uploadButton.addEventListener('click', function() {
+  //                    window.location.href = data.pdf_url;  // Trigger PDF download
+                  downloader.style.display = 'block'; 
+                  // data.pdf_id = '65ce3f8794b440ffb908769d';
+                  // fetch('https://c920-18-118-218-235.ngrok-free.app/download/' + data.pdf_id, {
+                      fetch('http://127.0.0.1:5000/download/' + data.pdf_id, {
+                              method: 'POST'
+                          })
+                          .then(response => response.blob())
+                          .then(blob => {
+                              const url = window.URL.createObjectURL(new Blob([blob]));
+                              const a = document.createElement('a');
+                              a.href = url;
+                              a.download = data.pdf_id+'.pdf';
+                              document.body.appendChild(a);
+                              a.click();
+                              window.URL.revokeObjectURL(url);
+                              document.body.removeChild(a);
+                              downloader.style.display = 'none';
 
 
-                            })
-                            .catch(error => {
-                                console.error('Error:', error);
-                                
-                                // Hide loading icon in case of error
-                                downloader.style.display = 'none';
-                            });
-                    });
-                })
-                .catch((error) => {
-                    console.error('Error:', error);
-                    loader.style.display = 'none';  // Hide loading icon on error
-                });                
-            } else {
-                // Show error message if URL is invalid
-                loader.style.display = 'none';
-                // errorMessage.textContent = 'Please enter a valid DocSend URL';
-                errorMessage.style.display = 'block'; // Show error message
-                normalMessage.style.display = 'none';                         
-            }                     
-        });        
-        document.getElementById("url-input").addEventListener("keydown", function(event) {
-            if (event.key === "Enter") {
-                event.preventDefault();
-                loader.style.display = 'block';  // Show loading icon
-            convertButton.style.display = 'none';
+                          })
+                          .catch(error => {
+                              console.error('Error:', error);
+                              
+                              // Hide loading icon in case of error
+                              downloader.style.display = 'none';
+                          });
+                  });
+              })
+              .catch((error) => {
+                  console.error('Error:', error);
+                  loader.style.display = 'none';  // Hide loading icon on error
+              });                
+          } else {
+              // Show error message if URL is invalid
+              loader.style.display = 'none';
+              // errorMessage.textContent = 'Please enter a valid DocSend URL';
+              errorMessage.style.display = 'block'; // Show error message
+              normalMessage.style.display = 'none';                         
+          }                     
+      });        
+      document.getElementById("url-input").addEventListener("keydown", function(event) {
+          if (event.key === "Enter") {
+              event.preventDefault();
+              loader.style.display = 'block';  // Show loading icon
+          convertButton.style.display = 'none';
+          convertButtonDiv.style.display = 'none';
+          convertInputDiv.style.display = 'none';
 
-            const url = document.getElementById('url-input').value;
-            const data = { url: url };
-            document.getElementById('error-message').style.display = 'none';
-            const errorMessage = document.getElementById('error-message');
-            const normalMessage = document.getElementById('normal-message');
+          const url = document.getElementById('url-input').value;
+          const data = { url: url };
+          document.getElementById('error-message').style.display = 'none';
+          const errorMessage = document.getElementById('error-message');
+          const normalMessage = document.getElementById('normal-message');
 
-            console.log(data);
-            // fetch('http://127.0.0.1:5000/convert', {
+          console.log(data);
+          // fetch('http://127.0.0.1:5000/convert', {
 
-                
-            if (urlRegex.test(url)) {
-                console.log("suces");
-                // Your conversion logic goes here when the URL is valid
-                loader.style.display = 'block';  // Hide loading icon when done
-                // You would also handle showing the downloader or upload button here
+              
+          if (urlRegex.test(url)) {
+              console.log("suces");
+              // Your conversion logic goes here when the URL is valid
+              loader.style.display = 'block';  // Hide loading icon when done
+              // You would also handle showing the downloader or upload button here
 //                fetch('https://7124-188-43-253-73.ngrok-free.app/convert', {
-               errorMessage.style.display = 'none';
-               normalMessage.style.display = 'none'; 
-               urlInput.style.display = 'none';
-               downloadingMessage.style.display = 'block';
-               fetch('https://c920-18-118-218-235.ngrok-free.app/convert', {
+             errorMessage.style.display = 'none';
+             normalMessage.style.display = 'none'; 
+             urlInput.style.display = 'none';
+             downloadingMessage.style.display = 'block';
+             fetch('https://c920-18-118-218-235.ngrok-free.app/convert', {
 //                fetch('http://127.0.0.1:5000/convert', {
 
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
-                })
-                .then(response => response.json())
-                .then(data => {
-                    console.log('Success:', data);
-                    loader.style.display = 'none';  // Hide loading icon
-                    uploadButton.style.display = 'block';  // Show upload button
-                    downloadMessage.style.display = 'block';
-                    downloadingMessage.style.display = 'none';   
-                    urlInput.style.display = 'none';                 
-                    uploadButton.addEventListener('click', function() {
-    //                    window.location.href = data.pdf_url;  // Trigger PDF download
-                    downloader.style.display = 'block'; 
-                    // data.pdf_id = '65ce3f8794b440ffb908769d';
-                    fetch('https://c920-18-118-218-235.ngrok-free.app/download/' + data.pdf_id, {
-                                method: 'POST'
-                            })
-                            .then(response => response.blob())
-                            .then(blob => {
-                                const url = window.URL.createObjectURL(new Blob([blob]));
-                                const a = document.createElement('a');
-                                a.href = url;
-                                a.download = 'converted.pdf';
-                                document.body.appendChild(a);
-                                a.click();
-                                window.URL.revokeObjectURL(url);
-                                document.body.removeChild(a);
-                                downloader.style.display = 'none';
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(data),
+              })
+              .then(response => response.json())
+              .then(data => {
+                  console.log('Success:', data);
+                  loader.style.display = 'none';  // Hide loading icon
+                  uploadButton.style.display = 'block';  // Show upload button
+                  downloadMessage.style.display = 'block';
+                  downloadingMessage.style.display = 'none';   
+                  urlInput.style.display = 'none';                 
+                  uploadButton.addEventListener('click', function() {
+  //                    window.location.href = data.pdf_url;  // Trigger PDF download
+                  downloader.style.display = 'block'; 
+                  // data.pdf_id = '65ce3f8794b440ffb908769d';
+                  fetch('https://c920-18-118-218-235.ngrok-free.app/download/' + data.pdf_id, {
+                              method: 'POST'
+                          })
+                          .then(response => response.blob())
+                          .then(blob => {
+                              const url = window.URL.createObjectURL(new Blob([blob]));
+                              const a = document.createElement('a');
+                              a.href = url;
+                              a.download = 'converted.pdf';
+                              document.body.appendChild(a);
+                              a.click();
+                              window.URL.revokeObjectURL(url);
+                              document.body.removeChild(a);
+                              downloader.style.display = 'none';
 
 
-                            })
-                            .catch(error => {
-                                console.error('Error:', error);
-                                
-                                // Hide loading icon in case of error
-                                downloader.style.display = 'none';
-                            });
-                    });
-                })
-                .catch((error) => {
-                    console.error('Error:', error);
-                    loader.style.display = 'none';  // Hide loading icon on error
-                });                
-            } else {
-                // Show error message if URL is invalid
-                loader.style.display = 'none';
-                // errorMessage.textContent = 'Please enter a valid DocSend URL';
-                errorMessage.style.display = 'block'; // Show error message
-                normalMessage.style.display = 'none';                         
-            }            
-            }          
-        });
-    </script>
-</body>
+                          })
+                          .catch(error => {
+                              console.error('Error:', error);
+                              
+                              // Hide loading icon in case of error
+                              downloader.style.display = 'none';
+                          });
+                  });
+              })
+              .catch((error) => {
+                  console.error('Error:', error);
+                  loader.style.display = 'none';  // Hide loading icon on error
+              });                
+          } else {
+              // Show error message if URL is invalid
+              loader.style.display = 'none';
+              // errorMessage.textContent = 'Please enter a valid DocSend URL';
+              errorMessage.style.display = 'block'; // Show error message
+              normalMessage.style.display = 'none';                         
+          }            
+          }          
+      });
+  </script>
 </html>
