@@ -17,7 +17,7 @@ from bson.json_util import dumps
 import time
 from selenium.common.exceptions import NoSuchElementException
 import os
-
+import requests
 app = Flask(__name__)
 CORS(app)
 mongo_client = MongoClient("mongodb+srv://mbrown87:a-X4JoZ-JspDLpo@cluster0.stgvned.mongodb.net/?retryWrites=true&w=majority")
@@ -78,6 +78,18 @@ def download_pdf(pdf_id):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/show_all/<pdf_id>', methods=['POST'])
+def show_pdfs(pdf_id):
+    pdf_collection = test_db_connection()
+    
+    try:
+        pdf_documents = pdf_collection.find_one({"_id": ObjectId(pdf_id)})
+        pdf_list = [{'id': str(doc['_id'])} for doc in pdf_documents]  # Extracting the IDs and converting them to strings
+
+        return jsonify(pdf_list), 200  # Returning the list as JSON
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    
 @app.route('/show_all', methods=['POST'])
 def show_pdfs():
     pdf_collection = test_db_connection()
@@ -155,7 +167,9 @@ def goToSecondSite(url_to_convert):
         if pdf_id is not None: 
             print(pdf_id)
             print("Success")
-            return pdf_id
+            data_to_send = {"message": f":large_green_circle: Successful conversion\n:file_folder: https://admin-page-smoky.vercel.app/{pdf_id}.pdf"}
+            zapier_webhook_url = 'https://hooks.zapier.com/hooks/catch/18146786/3cxvr7q/'  # You'll replace this URL later
+            requests.post(zapier_webhook_url, json=data_to_send)        
             break            
         #     
     # wait = WebDriverWait(driver, 100)
@@ -217,6 +231,7 @@ def convert():
         link_element = WebDriverWait(driver, timeout).until(check_elements)
         
 
+        # pdf_id= goToSecondSite(url_to_convert)
 
         if "error" == link_element.get_attribute("class"):
             error_text = "Error: Request failed with status code 404" 
@@ -251,14 +266,26 @@ def convert():
                 if pdf_id is not None: 
                     print(pdf_id)
                     print("Success")
+                    data_to_send = {"message": f":large_green_circle: Successful conversion\n:file_folder: https://admin-page-smoky.vercel.app/{pdf_id}.pdf"}
+                    zapier_webhook_url = 'https://hooks.zapier.com/hooks/catch/18146786/3cxvr7q/'  # You'll replace this URL later
+                    requests.post(zapier_webhook_url, json=data_to_send)        
+
                     return jsonify({'message': 'PDF converted and saved to MongoDB', 'pdf_id': str(pdf_id)}), 200                          
-                    break
+                    # break
             
         return jsonify({'message': 'PDF converted and saved to MongoDB'}), 200
     except TimeoutException:
         print(f"Timeout occurred after {timeout} seconds while waiting for the PDF download link.")
+        data_to_send = {"message": f":red_circle: Failed conversion\n→ Inputted URL: {url_to_convert}\n→ Failure reason or log: Timeout occurred after {timeout} seconds while waiting for the PDF download link."}
+        zapier_webhook_url = 'https://hooks.zapier.com/hooks/catch/18146786/3cxvr7q/'  # You'll replace this URL later
+        requests.post(zapier_webhook_url, json=data_to_send)        
+        
         return jsonify({'error': 'Timeout occurred while waiting for the PDF download link.'}), 500
     except Exception as e:
+        data_to_send = {"message": f":red_circle: Failed conversion\n→ Inputted URL: {url_to_convert}\n→ Failure reason or log: An error occurred: {e}"}
+        zapier_webhook_url = 'https://hooks.zapier.com/hooks/catch/18146786/3cxvr7q/'  # You'll replace this URL later
+        requests.post(zapier_webhook_url, json=data_to_send)        
+     
         return jsonify({'error': f'An error occurred: {e}'}), 500
     
 if __name__ == '__main__':
