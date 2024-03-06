@@ -14,6 +14,7 @@ from pymongo import MongoClient
 from flask_cors import CORS
 from flask import Response, stream_with_context
 from bson.json_util import dumps
+from bson import ObjectId
 import time
 from selenium.common.exceptions import NoSuchElementException
 import os
@@ -81,17 +82,19 @@ def download_pdf(pdf_id):
 @app.route('/show_all/<pdf_id>', methods=['POST'])
 def show_pdfs(pdf_id):
     pdf_collection = test_db_connection()
-    
+    # pdf_id_integer = int(pdf_id)
     try:
         pdf_documents = pdf_collection.find_one({"_id": ObjectId(pdf_id)})
-        pdf_list = [{'id': str(doc['_id'])} for doc in pdf_documents]  # Extracting the IDs and converting them to strings
-
-        return jsonify(pdf_list), 200  # Returning the list as JSON
+        if pdf_documents:  # Check if a document is found
+            pdf_list = [{'id': str(pdf_documents['_id'])}]  # Extract the ID and convert it to a string
+            return jsonify(pdf_list), 200 
+        else:
+            return jsonify({'error': 'No document found for the given PDF ID'}), 404        
     except Exception as e:
         return jsonify({'error': str(e)}), 500
     
 @app.route('/show_all', methods=['POST'])
-def show_pdfs():
+def show_all_pdfs():
     pdf_collection = test_db_connection()
     
     try:
