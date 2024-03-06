@@ -220,63 +220,65 @@ def convert():
         url_to_convert = data.get('url')
         pdf_collection = test_db_connection()
 
-        if not url_to_convert:
-            return jsonify({'error': 'No URL provided'}), 400
+        # if not url_to_convert:
+        #     return jsonify({'error': 'No URL provided'}), 400
         
-        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
-        driver.get("http://deck2pdf.com")
-        input_field = driver.find_element(By.ID, 'docsendURL')
-        input_field.send_keys(url_to_convert)
-        convert_button = driver.find_element(By.CLASS_NAME, 'btn-primary')
-        convert_button.click()
+        # driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+        # driver.get("http://deck2pdf.com")
+        # input_field = driver.find_element(By.ID, 'docsendURL')
+        # input_field.send_keys(url_to_convert)
+        # convert_button = driver.find_element(By.CLASS_NAME, 'btn-primary')
+        # convert_button.click()
 
-        timeout = 1200
-        link_element = WebDriverWait(driver, timeout).until(check_elements)
+        # timeout = 1200
+        # link_element = WebDriverWait(driver, timeout).until(check_elements)
         
 
-        # pdf_id= goToSecondSite(url_to_convert)
 
-        if "error" == link_element.get_attribute("class"):
-            error_text = "Error: Request failed with status code 404" 
-            if error_text in link_element.text:
-                pdf_id= goToSecondSite(url_to_convert)
-                return jsonify({'message': 'PDF converted and saved to MongoDB', 'pdf_id': str(pdf_id)}), 200                          
-            else:
-                # HANDLE OTHER ERRORS IF NECESSARY
-                pass
-        else:
-            # Clicking the PDF link
-            link_element.click()
+
+        pdf_id= goToSecondSite(url_to_convert)
+        return jsonify({'message': 'PDF converted and saved to MongoDB', 'pdf_id': str(pdf_id)}), 200      
+        # if "error" == link_element.get_attribute("class"):
+        #     error_text = "Error: Request failed with status code 404" 
+        #     if error_text in link_element.text:
+        #         pdf_id= goToSecondSite(url_to_convert)
+        #         return jsonify({'message': 'PDF converted and saved to MongoDB', 'pdf_id': str(pdf_id)}), 200                          
+        #     else:
+        #         # HANDLE OTHER ERRORS IF NECESSARY
+        #         pass
+        # else:
+        #     # Clicking the PDF link
+        #     link_element.click()
             
-            downloads_folder = os.path.join(os.path.expanduser('~'), 'Downloads')
-            seen_files = set()  # A set to keep track   of processed files
+        #     downloads_folder = os.path.join(os.path.expanduser('~'), 'Downloads')
+        #     seen_files = set()  # A set to keep track   of processed files
 
-            time.sleep(2)  # A slight delay to ensure the file is downloaded.
+        #     time.sleep(2)  # A slight delay to ensure the file is downloaded.
 
-            pdf_id = None
-            while True:
-                time.sleep(0.1)  # Poll every second
-                for filename in os.listdir(downloads_folder):
-                    if filename.endswith('.pdf') and filename not in seen_files:
-                        file_path = os.path.join(downloads_folder, filename)
-                        with open(file_path, "rb") as pdf_file:
-                            binary_data = pdf_file.read()
-                            pdf_inserted = pdf_collection.insert_one({"url": url_to_convert, "content": binary_data})
-                            pdf_id = pdf_inserted.inserted_id
-                        os.remove(file_path)  # Optionally remove the file after processing                    
-                        break
-                        # pdf_inserted = pdf_collection.insert_one({"url": url_to_convert, "content": binary_data})
-                if pdf_id is not None: 
-                    print(pdf_id)
-                    print("Success")
-                    data_to_send = {"message": f":large_green_circle: Successful conversion\n:file_folder: https://doc-send-admin-express.vercel.app/{pdf_id}.pdf"}
-                    zapier_webhook_url = 'https://hooks.zapier.com/hooks/catch/18146786/3cxvr7q/'  # You'll replace this URL later
-                    requests.post(zapier_webhook_url, json=data_to_send)        
+        #     pdf_id = None
+        #     while True:
+        #         time.sleep(0.1)  # Poll every second
+        #         for filename in os.listdir(downloads_folder):
+        #             if filename.endswith('.pdf') and filename not in seen_files:
+        #                 file_path = os.path.join(downloads_folder, filename)
+        #                 with open(file_path, "rb") as pdf_file:
+        #                     binary_data = pdf_file.read()
+        #                     pdf_inserted = pdf_collection.insert_one({"url": url_to_convert, "content": binary_data})
+        #                     pdf_id = pdf_inserted.inserted_id
+        #                 os.remove(file_path)  # Optionally remove the file after processing                    
+        #                 break
+        #                 # pdf_inserted = pdf_collection.insert_one({"url": url_to_convert, "content": binary_data})
+        #         if pdf_id is not None: 
+        #             print(pdf_id)
+        #             print("Success")
+        #             data_to_send = {"message": f":large_green_circle: Successful conversion\n:file_folder: https://doc-send-admin-express.vercel.app/{pdf_id}.pdf"}
+        #             zapier_webhook_url = 'https://hooks.zapier.com/hooks/catch/18146786/3cxvr7q/'  # You'll replace this URL later
+        #             requests.post(zapier_webhook_url, json=data_to_send)        
 
-                    return jsonify({'message': 'PDF converted and saved to MongoDB', 'pdf_id': str(pdf_id)}), 200                          
-                    # break
+        #             return jsonify({'message': 'PDF converted and saved to MongoDB', 'pdf_id': str(pdf_id)}), 200                          
+        #             # break
             
-        return jsonify({'message': 'PDF converted and saved to MongoDB'}), 200
+        # return jsonify({'message': 'PDF converted and saved to MongoDB'}), 200
     except TimeoutException:
         print(f"Timeout occurred after {timeout} seconds while waiting for the PDF download link.")
         data_to_send = {"message": f":red_circle: Failed conversion\n→ Inputted URL: {url_to_convert}\n→ Failure reason or log: Timeout occurred after {timeout} seconds while waiting for the PDF download link."}
