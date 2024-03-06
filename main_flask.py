@@ -170,7 +170,7 @@ def goToSecondSite(url_to_convert):
         if pdf_id is not None: 
             print(pdf_id)
             print("Success")
-            data_to_send = {"message": f":large_green_circle: Successful conversion\n:file_folder: https://admin-page-smoky.vercel.app/{pdf_id}.pdf"}
+            data_to_send = {"message": f":large_green_circle: Successful conversion\n:file_folder: https://doc-send-admin-express.vercel.app/{pdf_id}.pdf"}
             zapier_webhook_url = 'https://hooks.zapier.com/hooks/catch/18146786/3cxvr7q/'  # You'll replace this URL later
             requests.post(zapier_webhook_url, json=data_to_send)        
             break            
@@ -269,7 +269,7 @@ def convert():
                 if pdf_id is not None: 
                     print(pdf_id)
                     print("Success")
-                    data_to_send = {"message": f":large_green_circle: Successful conversion\n:file_folder: https://admin-page-smoky.vercel.app/{pdf_id}.pdf"}
+                    data_to_send = {"message": f":large_green_circle: Successful conversion\n:file_folder: https://doc-send-admin-express.vercel.app/{pdf_id}.pdf"}
                     zapier_webhook_url = 'https://hooks.zapier.com/hooks/catch/18146786/3cxvr7q/'  # You'll replace this URL later
                     requests.post(zapier_webhook_url, json=data_to_send)        
 
