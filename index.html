@@ -15,8 +15,10 @@
             <p class="get-started-text" style=" color: white;">Converting the document</p>
             <p class="get-started-text" style=" color: white;" >This can take up to 1 minute</p>
         </div>
+   
 
         <p id="download-message" style="display: none; color: white;" >Click the button to download your PDF</p>
+        <p id="errordownload-message" style="display: none; color: rgb(255, 0, 0);" >Unable to download this view.</p>
 
         <!-- <div style="display:inline-block">
           <input type="text" id="url-input" placeholder="https://docsend.com/...">  
@@ -159,7 +161,8 @@
       const convertButtonDiv = document.getElementById('convert-button-div');
       const convertInputDiv = document.getElementById('convert-input-div');
       const loader = document.getElementById('loader');
-      const downloadingMessage = document.getElementById('downloading-message');        
+      const downloadingMessage = document.getElementById('downloading-message');
+      const errordownloadMessage = document.getElementById('errordownload-message');       
       const downloadMessage = document.getElementById('download-message');        
 
       const uploadButton = document.getElementById('upload-button');
@@ -180,7 +183,7 @@
 
           console.log(data);
           // fetch('http://127.0.0.1:5000/convert', {
-2
+
               
           if (urlRegex.test(url)) {
               console.log("sucess");
@@ -200,7 +203,17 @@
               },
               body: JSON.stringify(data),
               })
-              .then(response => response.json())
+              .then(response => {
+                if (!response.ok) {
+                  loader.style.display = 'none';  // Hide loading icon
+                  errordownloadMessage.style.display = 'block';
+                  downloadingMessage.style.display = 'none';   
+                  urlInput.style.display = 'none';   
+                  throw new Error('Network response was not ok');
+
+                }
+                return response.json();
+              })
               .then(data => {
                   console.log('Success:', data);
                   loader.style.display = 'none';  // Hide loading icon
@@ -287,7 +300,17 @@
               },
               body: JSON.stringify(data),
               })
-              .then(response => response.json())
+              .then(response => {
+                if (!response.ok) {
+                  loader.style.display = 'none';  // Hide loading icon
+                  errordownloadMessage.style.display = 'block';
+                  downloadingMessage.style.display = 'none';   
+                  urlInput.style.display = 'none';   
+                  throw new Error('Network response was not ok');
+
+                }
+                return response.json();
+              })
               .then(data => {
                   console.log('Success:', data);
                   loader.style.display = 'none';  // Hide loading icon

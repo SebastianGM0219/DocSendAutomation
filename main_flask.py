@@ -117,6 +117,18 @@ def check_elements(driver):
             # If neither element is found, return False
             return False
 
+def check_elementsForSecond(driver):
+    try:
+        # Attempt to find the PDF link element
+        return driver.find_element(By.XPATH, "//a[contains(@href, '/tmp/') and contains(@href, '.pdf')]")
+    except NoSuchElementException:
+        # If NoSuchElementException is raised, try to find the error element
+        try:
+            return driver.find_element(By.XPATH, "//div[@class='error']")
+        except NoSuchElementException:
+            # If neither element is found, return False
+            return False
+        
 def goToSecondSite(url_to_convert):
     pdf_collection = test_db_connection()
 
@@ -149,31 +161,48 @@ def goToSecondSite(url_to_convert):
     convert_button = driver.find_element(By.ID, 'submit')
     convert_button.click()
 
-    downloads_folder = os.path.join(os.path.expanduser('~'), 'Downloads')
-    seen_files = set()  # A set to keep track   of processed files
+    # timeout = 1200
+    # link_element = WebDriverWait(driver, timeout).until(check_elements)
 
-    time.sleep(2)  # A slight delay to ensure the file is downloaded.
+    time.sleep(4)  # A slight delay to ensure the file is downloaded.
 
-    pdf_id = None
-    while True:
-        time.sleep(0.1)  # Poll every second
-        for filename in os.listdir(downloads_folder):
-            if filename.endswith('.pdf') and filename not in seen_files:
-                file_path = os.path.join(downloads_folder, filename)
-                with open(file_path, "rb") as pdf_file:
-                    binary_data = pdf_file.read()
-                    pdf_inserted = pdf_collection.insert_one({"url": url_to_convert, "content": binary_data})
-                    pdf_id = pdf_inserted.inserted_id
-                os.remove(file_path)  # Optionally remove the file after processing                    
-                break
-                # pdf_inserted = pdf_collection.insert_one({"url": url_to_convert, "content": binary_data})
-        if pdf_id is not None: 
-            print(pdf_id)
-            print("Success")
-            data_to_send = {"message": f":large_green_circle: Successful conversion\n:file_folder: https://doc-send-admin-express.vercel.app/{pdf_id}.pdf"}
-            zapier_webhook_url = 'https://hooks.zapier.com/hooks/catch/18146786/3cxvr7q/'  # You'll replace this URL later
-            requests.post(zapier_webhook_url, json=data_to_send)        
-            break            
+    error_element = None
+    try:
+        print("here")
+        error_element = driver.find_element(By.XPATH, "//p[@class='text-danger']")        
+        print(error_element)
+    except NoSuchElementException:
+        pass
+
+    if error_element:
+        # If error element is found, return the error message in Flask
+        print("error")
+        return "error"
+    else:
+        downloads_folder = os.path.join(os.path.expanduser('~'), 'Downloads')
+        seen_files = set()  # A set to keep track   of processed files
+
+        pdf_id = None
+        while True:
+            time.sleep(0.1)  # Poll every second
+            for filename in os.listdir(downloads_folder):
+                if filename.endswith('.pdf') and filename not in seen_files:
+                    file_path = os.path.join(downloads_folder, filename)
+                    with open(file_path, "rb") as pdf_file:
+                        binary_data = pdf_file.read()
+                        pdf_inserted = pdf_collection.insert_one({"url": url_to_convert, "content": binary_data})
+                        pdf_id = pdf_inserted.inserted_id
+                    os.remove(file_path)  # Optionally remove the file after processing                    
+                    break
+                    # pdf_inserted = pdf_collection.insert_one({"url": url_to_convert, "content": binary_data})
+            if pdf_id is not None: 
+                print(pdf_id)
+                print("Success")
+                data_to_send = {"message": f":large_green_circle: Successful conversion\n:file_folder: https://doc-send-admin-express.vercel.app/{pdf_id}.pdf"}
+                zapier_webhook_url = 'https://hooks.zapier.com/hooks/catch/18146786/3cxvr7q/'  # You'll replace this URL later
+                requests.post(zapier_webhook_url, json=data_to_send)        
+                return pdf_id
+                break            
         #     
     # wait = WebDriverWait(driver, 100)
     # wait.until(EC.presence_of_element_located((By.ID, 'download')))
@@ -237,7 +266,13 @@ def convert():
 
 
         pdf_id= goToSecondSite(url_to_convert)
-        return jsonify({'message': 'PDF converted and saved to MongoDB', 'pdf_id': str(pdf_id)}), 200      
+        if(pdf_id == "error"):
+            data_to_send = {"message": f":red_circle: Failed conversion\n→ Inputted URL: {url_to_convert}\n→ Failure reason or log: Unable to download this view."}
+            zapier_webhook_url = 'https://hooks.zapier.com/hooks/catch/18146786/3cxvr7q/'  # You'll replace this URL later
+            requests.post(zapier_webhook_url, json=data_to_send)                    
+            return jsonify({'error': 'Timeout occurred while waiting for the PDF download link.'}), 500
+        else:
+            return jsonify({'message': 'PDF converted and saved to MongoDB', 'pdf_id': str(pdf_id)}), 200      
         # if "error" == link_element.get_attribute("class"):
         #     error_text = "Error: Request failed with status code 404" 
         #     if error_text in link_element.text:
