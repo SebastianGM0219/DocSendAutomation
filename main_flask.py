@@ -130,80 +130,89 @@ def check_elementsForSecond(driver):
             return False
         
 def goToSecondSite(url_to_convert):
-    pdf_collection = test_db_connection()
-
-    downloads_folder = os.path.join(os.path.expanduser('~'), 'Downloads')    
-    # download_directory = '/downloads/'
-    chrome_options.add_experimental_option('prefs', {
-        'download.default_directory': downloads_folder,
-        'download.prompt_for_download': False,  # Disable download prompt
-        'plugins.always_open_pdf_externally': True  # Disable PDF viewer so it downloads instead
-    })
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
-    driver.get("https://docsend2pdf.com/")
-
-    input_field = driver.find_element(By.NAME, 'url')
-    input_field.send_keys(url_to_convert)
-
-    details_tag = driver.find_element(By.TAG_NAME, 'details')
-
-    # Use JavaScript to set the 'open' attribute on the 'details' tag
-    driver.execute_script("arguments[0].setAttribute('open', '');", details_tag)
-
-    email_field = driver.find_element(By.NAME, 'email')
-    print(email_field)
-    email_value = "lightshinemaya@gmail.com"
-    email_field.send_keys(email_value)
-
-    # pass_field = driver.find_element(By.NAME, 'passcode')
-    # pass_field.send_keys("Showlightning123")
-
-    convert_button = driver.find_element(By.ID, 'submit')
-    convert_button.click()
-
-    # timeout = 1200
-    # link_element = WebDriverWait(driver, timeout).until(check_elements)
-
-    time.sleep(4)  # A slight delay to ensure the file is downloaded.
-
-    error_element = None
     try:
-        print("here")
-        error_element = driver.find_element(By.XPATH, "//p[@class='text-danger']")        
-        print(error_element)
-    except NoSuchElementException:
-        pass
+        pdf_collection = test_db_connection()
 
-    if error_element:
-        # If error element is found, return the error message in Flask
-        print("error")
-        return "error"
-    else:
-        downloads_folder = os.path.join(os.path.expanduser('~'), 'Downloads')
-        seen_files = set()  # A set to keep track   of processed files
+        downloads_folder = os.path.join(os.path.expanduser('~'), 'Downloads')    
+        # download_directory = '/downloads/'
+        chrome_options.add_experimental_option('prefs', {
+            'download.default_directory': downloads_folder,
+            'download.prompt_for_download': False,  # Disable download prompt
+            'plugins.always_open_pdf_externally': True  # Disable PDF viewer so it downloads instead
+        })
+        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+        driver.get("https://docsend2pdf.com/")
 
-        pdf_id = None
-        while True:
-            time.sleep(0.1)  # Poll every second
-            for filename in os.listdir(downloads_folder):
-                if filename.endswith('.pdf') and filename not in seen_files:
-                    file_path = os.path.join(downloads_folder, filename)
-                    with open(file_path, "rb") as pdf_file:
-                        binary_data = pdf_file.read()
-                        pdf_inserted = pdf_collection.insert_one({"url": url_to_convert, "content": binary_data})
-                        pdf_id = pdf_inserted.inserted_id
-                    os.remove(file_path)  # Optionally remove the file after processing                    
-                    break
-                    # pdf_inserted = pdf_collection.insert_one({"url": url_to_convert, "content": binary_data})
-            if pdf_id is not None: 
-                print(pdf_id)
-                print("Success")
-                data_to_send = {"message": f":large_green_circle: Successful conversion\n:file_folder: https://doc-send-admin-express.vercel.app/{pdf_id}.pdf"}
-                zapier_webhook_url = 'https://hooks.zapier.com/hooks/catch/18146786/3cxvr7q/'  # You'll replace this URL later
-                requests.post(zapier_webhook_url, json=data_to_send)        
-                return pdf_id
-                break            
-        #     
+        input_field = driver.find_element(By.NAME, 'url')
+        input_field.send_keys(url_to_convert)
+
+        details_tag = driver.find_element(By.TAG_NAME, 'details')
+
+        # Use JavaScript to set the 'open' attribute on the 'details' tag
+        driver.execute_script("arguments[0].setAttribute('open', '');", details_tag)
+
+        email_field = driver.find_element(By.NAME, 'email')
+        print(email_field)
+        email_value = "lightshinemaya@gmail.com"
+        email_field.send_keys(email_value)
+
+        # pass_field = driver.find_element(By.NAME, 'passcode')
+        # pass_field.send_keys("Showlightning123")
+
+        convert_button = driver.find_element(By.ID, 'submit')
+        convert_button.click()
+
+        
+        # timeout = 1200
+        # link_element = WebDriverWait(driver, timeout).until(check_elements)
+
+        time.sleep(4)  # A slight delay to ensure the file is downloaded.
+
+        error_element = None
+        try:
+            print("here")
+            error_element = driver.find_elements(By.XPATH, "//p[contains(@class, 'text-danger')] | //center[contains(text(),'nginx/1.22.0')] | //span[@jsselect='heading'][@jsvalues*='This page isn’t working']")
+            print(error_element)
+        except NoSuchElementException:
+            pass
+
+        if error_element:
+            # If error element is found, return the error message in Flask
+            print("error")
+            return "error"
+        else:
+            downloads_folder = os.path.join(os.path.expanduser('~'), 'Downloads')
+            seen_files = set()  # A set to keep track   of processed files
+
+            pdf_id = None
+            while True:
+                time.sleep(0.1)  # Poll every second
+                for filename in os.listdir(downloads_folder):
+                    if filename.endswith('.pdf') and filename not in seen_files:
+                        file_path = os.path.join(downloads_folder, filename)
+                        with open(file_path, "rb") as pdf_file:
+                            binary_data = pdf_file.read()
+                            pdf_inserted = pdf_collection.insert_one({"url": url_to_convert, "content": binary_data})
+                            pdf_id = pdf_inserted.inserted_id
+                        os.remove(file_path)  # Optionally remove the file after processing                    
+                        break
+                        # pdf_inserted = pdf_collection.insert_one({"url": url_to_convert, "content": binary_data})
+                if pdf_id is not None: 
+                    print(pdf_id)
+                    print("Success")
+                    data_to_send = {"message": f":large_green_circle: Successful conversion\n:file_folder: https://doc-send-admin-express.vercel.app/{pdf_id}.pdf"}
+                    zapier_webhook_url = 'https://hooks.zapier.com/hooks/catch/18146786/3cxvr7q/'  # You'll replace this URL later
+                    requests.post(zapier_webhook_url, json=data_to_send)        
+                    return pdf_id
+                    break     
+    except TimeoutException:
+        print(f"Timeout occurred after {100} seconds while waiting for the PDF download link.")
+        data_to_send = {"message": f":red_circle: Failed conversion\n→ Inputted URL: {url_to_convert}\n→ Failure reason or log: Timeout occurred after {timeout} seconds while waiting for the PDF download link."}
+        zapier_webhook_url = 'https://hooks.zapier.com/hooks/catch/18146786/3cxvr7q/'  # You'll replace this URL later
+        requests.post(zapier_webhook_url, json=data_to_send)        
+        return "error"        
+       
+            #     
     # wait = WebDriverWait(driver, 100)
     # wait.until(EC.presence_of_element_located((By.ID, 'download')))
 
