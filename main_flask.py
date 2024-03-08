@@ -171,7 +171,7 @@ def goToSecondSite(url_to_convert):
         error_element = None
         try:
             print("here")
-            error_element = driver.find_elements(By.XPATH, "//p[contains(@class, 'text-danger')] | //center[contains(text(),'nginx/1.22.0')] | //span[@jsselect='heading'][@jsvalues*='This page isn’t working']")
+            error_element = driver.find_elements(By.XPATH, "//p[contains(@class, 'text-danger')] | //center[contains(text(), 'nginx/1.22.0')]")            
             print(error_element)
         except NoSuchElementException:
             pass
