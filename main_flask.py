@@ -10,15 +10,20 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from pymongo import MongoClient
 from flask_cors import CORS
 from flask import Response, stream_with_context
 from bson.json_util import dumps
 from bson import ObjectId
 import time
+from selenium.webdriver.common.by import By
+from threading import Thread
 from selenium.common.exceptions import NoSuchElementException
 import os
 import requests
+from selenium.webdriver.common.action_chains import ActionChains
 app = Flask(__name__)
 CORS(app)
 mongo_client = MongoClient("mongodb+srv://mbrown87:a-X4JoZ-JspDLpo@cluster0.stgvned.mongodb.net/?retryWrites=true&w=majority")
@@ -128,8 +133,16 @@ def check_elementsForSecond(driver):
         except NoSuchElementException:
             # If neither element is found, return False
             return False
-        
-def goToSecondSite(url_to_convert):
+
+def send_email_key(driver, email):
+    email_field = driver.find_element(By.NAME, 'email')
+    email_field.send_keys(email)
+
+def send_password_key(driver, password):
+    password_field = driver.find_element(By.NAME, 'password')
+    password_field.send_keys(password)
+
+def goToSecondSite(url_to_convert, email, password):
     try:
         pdf_collection = test_db_connection()
 
@@ -152,9 +165,31 @@ def goToSecondSite(url_to_convert):
         driver.execute_script("arguments[0].setAttribute('open', '');", details_tag)
 
         email_field = driver.find_element(By.NAME, 'email')
-        print(email_field)
-        email_value = "lightshinemaya@gmail.com"
-        email_field.send_keys(email_value)
+        email_field.send_keys(email)
+
+        # time.sleep(1)
+        password_field = driver.find_element(By.NAME, 'passcode')
+        password_field.send_keys(password)
+
+        # t1 = Thread(target=send_email_key, args=(driver, email))
+        # t2 = Thread(target=send_password_key, args=(driver, password))
+
+        # # Start threads
+        # t1.start()
+        # t2.start()
+
+        # # Wait for both threads to complete
+        # t1.join()
+        # t2.join()
+
+        # email_field = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.NAME, 'email')))
+        # password_field = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.NAME, 'password')))
+
+        # send keys to the email and password fields
+        # email_field.send_keys(email)
+        # password_field.send_keys(password)
+        # print(email_field)
+        # email_value = "lightshinemaya@gmail.com"
 
         # pass_field = driver.find_element(By.NAME, 'passcode')
         # pass_field.send_keys("Showlightning123")
@@ -256,6 +291,9 @@ def convert():
     try:
         data = request.get_json()  # Use get_json to extract JSON data from the request
         url_to_convert = data.get('url')
+        email_to_convert = data.get('email')
+        password_to_convert = data.get('password')
+
         pdf_collection = test_db_connection()
 
         # if not url_to_convert:
@@ -274,7 +312,7 @@ def convert():
 
 
 
-        pdf_id= goToSecondSite(url_to_convert)
+        pdf_id= goToSecondSite(url_to_convert,email_to_convert,password_to_convert)
         if(pdf_id == "error"):
             data_to_send = {"message": f":red_circle: Failed conversion\n→ Inputted URL: {url_to_convert}\n→ Failure reason or log: Unable to download this view."}
             zapier_webhook_url = 'https://hooks.zapier.com/hooks/catch/18146786/3cxvr7q/'  # You'll replace this URL later

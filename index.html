@@ -10,7 +10,7 @@
         <h1 class="heading">Docsend to PDF Converter</h1>
         <p class="paragraph get-started-text last-updated">Last updated March 1, 2023</p>
         <div class="div-block-2">
-          <div>Hit <strong>Command-D (⌘-D)</strong> to bookmark this page and use it in the future</div>
+          <div>Hit <strong>Ctrl-D (⌘-D)</strong> to bookmark this page and use it in the future</div>
         </div>
         <p id="normal-message" style="display: block;  " class="paragraph get-started-text">Enter the Docsend URL below to start your download</p>
         <p id="error-message" style="display: none; color: red;">Please enter a valid DocSend Url</p>
@@ -23,14 +23,6 @@
         <p id="download-message" style="display: none; color: white;" >Click the button to download your PDF</p>
         <p id="errordownload-message" style="display: none; color: rgb(255, 0, 0);" >Unable to download this view.</p>
 
-        <!-- <div style="display:inline-block">
-          <input type="text" id="url-input" placeholder="https://docsend.com/...">  
-          <span>
-            <button type="button" id="convert-button">
-                CONVERT
-            </button>
-          </span>
-        </div> -->
 
         <div style="display: flex;">
           <div style="flex: 70%;" id="convert-input-div">
@@ -42,58 +34,23 @@
           <button type="button" style="margin: auto; display: none;" id="upload-button">DOWNLOAD PDF</button>
         </div>
 
-        <!-- <details class="form-text text-muted paragraph-top" id="credentials_panel" open="">
-            <summary class="paragraph get-started-text ">Does the Docsend require an email and/or password?</summary>
-            <div class="form-group col">
-            <label for="docsend_email" class="col-sm-2 col-form-label paragraph get-started-text">Your email:</label>
-            <div class="row-sm-7">
-              <input type="text" name="docsend_email" class="form-control form-control-mg mb-2 emailAddress" placeholder="john.doe@gmail.com" id="docsend_email" data-listener-added_4beaea0c="true">
-            </div>
-            <div class="row-sm-3" style="display: none;" id="email_error_msg">
-              <small class="text-danger">
-                You must input an authorized email for the Docsend URL.
-              </small>
-            </div>
-          </div>
-          <div class="form-group row">
-            <label for="docsend_email" class="col-sm-2 col-form-label">The Docsend URL passcode:</label>
-            <div class="col-sm-7">
-                <input type="password" name="docsend_passcode" class="form-control form-control-mg mb-2" placeholder="password" id="docsend_passcode">
-              </div>
-              <div class="col-sm-3" style="display: none;" id="passcode_error_msg">
-              <small class="text-danger">
-                You must type the Docsend passcode.
-              </small>      
-            </div>
-          </div>
-        </details> -->
-        <details>
+        <details id="details_div">
           <summary>Does the Docsend require an email and/or password?</summary>
           <div class="content">
             <p>
               <div class="form-group col" style="display: flex;">
                 <label for="docsend_email" style="align-items: center; text-align:center; justify-content: center; display: flex; font-size: 20px; flex: 40%; color: black; " class="col-form-label ">Your email:</label>
                 <div class="row-sm-7"  style="flex: 60%;">
-                  <input type="email" name="docsend_email"  class="form-control form-control-mg mb-2 emailAddress" placeholder="john.doe@gmail.com" id="docsend_email" required>
+                  <input type="email" name="docsend_email"  class="form-control form-control-mg mb-2 emailAddress" placeholder="john.doe@gmail.com" id="url-email" required>
                 </div>
-                <!-- <div class="row-sm-3" style="display: block;" id="email_error_msg">
-                  <small class="text-danger">
-                    You must input an authorized email for the Docsend URL.
-                  </small>
-                </div> -->
               </div>
             </p>
             <p>
               <div class="form-group col" style="display: flex;">
                 <label for="docsend_email" style="align-items: center; text-align:center; justify-content: center; display: flex; font-size: 20px; flex: 40%; color: black; " class="col-form-label ">The Docsend URL passcode:</label>
                 <div class="row-sm-7"  style="flex: 60%;">
-                  <input type="password" name="docsend_email"  class="form-control form-control-mg mb-2 emailAddress" placeholder="password" id="docsend_email">
+                  <input type="password" name="docsend_email"  class="form-control form-control-mg mb-2 emailAddress" placeholder="password" id="url-password" required>
                 </div>
-                <!-- <div class="row-sm-3" style="display: block;" id="email_error_msg">
-                  <small class="text-danger">
-                    You must input an authorized email for the Docsend URL.
-                  </small>
-                </div> -->
               </div>
             </p>
           </div>
@@ -104,17 +61,6 @@
         </div>
         <div id="downloader" style="display: none; color: white;">Downloading...</div>    
 
-        <!-- <div>
-          <div class="w-embed w-script">
-            <div class="docsend" id="docsend" style="width:400px align:center"></div>
-            <script src="https://docsend.nyc3.cdn.digitaloceanspaces.com/widget/main.js"></script>
-            <script>
-              DocSendJS.Widget({
-                element: '#docsend',
-              });
-            </script>
-          </div>
-        </div> -->
       </div>
     </div>
     <div class="section hero midhero">
@@ -354,7 +300,7 @@
       });
 
       const convertButton = document.getElementById('convert-button');
-
+      const details_div = document.getElementById('details_div');
       const convertButtonDiv = document.getElementById('convert-button-div');
       const convertInputDiv = document.getElementById('convert-input-div');
       const loader = document.getElementById('loader');
@@ -373,7 +319,10 @@
           convertInputDiv.style.display = 'none';
 
           const url = document.getElementById('url-input').value;
-          const data = { url: url };
+          const email = document.getElementById('url-email').value;
+          const password = document.getElementById('url-password').value;
+
+          const data = { url: url,email: email,password:password};
           document.getElementById('error-message').style.display = 'none';
           const errorMessage = document.getElementById('error-message');
           const normalMessage = document.getElementById('normal-message');
@@ -390,8 +339,10 @@
              normalMessage.style.display = 'none';
              urlInput.style.display = 'none';
              downloadingMessage.style.display = 'block';
-             fetch('https://c920-18-118-218-235.ngrok-free.app/convert', {
-            //  fetch('http://127.0.0.1:5000/convert', {
+             details_div.style.display = 'none';  
+
+            //  fetch('https://c920-18-118-218-235.ngrok-free.app/convert', {
+             fetch('http://127.0.0.1:5000/convert', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -414,7 +365,7 @@
                   loader.style.display = 'none';  // Hide loading icon
                   uploadButton.style.display = 'block';  // Show upload button
                   downloadMessage.style.display = 'block';
-                  downloadingMessage.style.display = 'none';   
+                  downloadingMessage.style.display = 'none'; 
                   urlInput.style.display = 'none';                 
                   uploadButton.addEventListener('click', function() {
   //                    window.location.href = data.pdf_url;  // Trigger PDF download
@@ -467,31 +418,33 @@
           convertInputDiv.style.display = 'none';
 
           const url = document.getElementById('url-input').value;
-          const data = { url: url };
+          const email = document.getElementById('url-email').value;
+          const password = document.getElementById('url-password').value;
+
+          const data = { url: url,email: email,password:password};
           document.getElementById('error-message').style.display = 'none';
           const errorMessage = document.getElementById('error-message');
           const normalMessage = document.getElementById('normal-message');
 
           console.log(data);
           // fetch('http://127.0.0.1:5000/convert', {
-
-              
           if (urlRegex.test(url)) {
-              console.log("suces");
+              console.log("success");
               // Your conversion logic goes here when the URL is valid
               loader.style.display = 'block';  // Hide loading icon when done
               // You would also handle showing the downloader or upload button here
 //                fetch('https://7124-188-43-253-73.ngrok-free.app/convert', {
              errorMessage.style.display = 'none';
-             normalMessage.style.display = 'none'; 
+             normalMessage.style.display = 'none';
              urlInput.style.display = 'none';
              downloadingMessage.style.display = 'block';
-             fetch('https://c920-18-118-218-235.ngrok-free.app/convert', {
-//                fetch('http://127.0.0.1:5000/convert', {
+             details_div.style.display = 'none';  
 
-              method: 'POST',
-              headers: {
-                  'Content-Type': 'application/json',
+            //  fetch('https://c920-18-118-218-235.ngrok-free.app/convert', {
+             fetch('http://127.0.0.1:5000/convert', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
               },
               body: JSON.stringify(data),
               })
@@ -511,13 +464,14 @@
                   loader.style.display = 'none';  // Hide loading icon
                   uploadButton.style.display = 'block';  // Show upload button
                   downloadMessage.style.display = 'block';
-                  downloadingMessage.style.display = 'none';   
+                  downloadingMessage.style.display = 'none'; 
                   urlInput.style.display = 'none';                 
                   uploadButton.addEventListener('click', function() {
   //                    window.location.href = data.pdf_url;  // Trigger PDF download
                   downloader.style.display = 'block'; 
                   // data.pdf_id = '65ce3f8794b440ffb908769d';
                   fetch('https://c920-18-118-218-235.ngrok-free.app/download/' + data.pdf_id, {
+                      // fetch('http://127.0.0.1:5000/download/' + data.pdf_id, {
                               method: 'POST'
                           })
                           .then(response => response.blob())
@@ -525,7 +479,7 @@
                               const url = window.URL.createObjectURL(new Blob([blob]));
                               const a = document.createElement('a');
                               a.href = url;
-                              a.download = 'converted.pdf';
+                              a.download = data.pdf_id+'.pdf';
                               document.body.appendChild(a);
                               a.click();
                               window.URL.revokeObjectURL(url);
@@ -552,8 +506,31 @@
               // errorMessage.textContent = 'Please enter a valid DocSend URL';
               errorMessage.style.display = 'block'; // Show error message
               normalMessage.style.display = 'none';                         
-          }            
+          }        
           }          
       });
+
+      document.addEventListener('keydown', function(event) {
+         if (event.ctrlKey && event.key === 'd') {
+          bookmarkPage();
+          event.preventDefault(); // Prevent the default browser behavior
+        }
+      });
+
+      function bookmarkPage() {
+        var pageTitle = document.title;
+        var pageURL = window.location.href;
+
+        if (window.external && ('AddFavorite' in window.external)) {
+          // For Internet Explorer
+          window.external.AddFavorite(pageURL, pageTitle);
+        } else if (window.sidebar && window.sidebar.addPanel) {
+          // For Firefox
+          window.sidebar.addPanel(pageTitle, pageURL, '');
+        } else {
+          // For other browsers, provide instructions
+          alert("To bookmark page, please press 'Ctrl + D' or use your browser's bookmarking feature.");
+        }
+      }
   </script>
 </html>
