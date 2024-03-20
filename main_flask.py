@@ -165,12 +165,15 @@ def goToSecondSite(url_to_convert, email, password):
         driver.execute_script("arguments[0].setAttribute('open', '');", details_tag)
 
         email_field = driver.find_element(By.NAME, 'email')
-        email_field.send_keys(email)
+        email_new = email
+        if(email_new == ""):
+            email_new = "lightshinemaya@gmail.com"
+        email_field.send_keys(email_new)
 
         # time.sleep(1)
-        password_field = driver.find_element(By.NAME, 'passcode')
-        password_field.send_keys(password)
-
+        if(email != ""):        
+            password_field = driver.find_element(By.NAME, 'passcode')
+            password_field.send_keys(password)
         # t1 = Thread(target=send_email_key, args=(driver, email))
         # t2 = Thread(target=send_password_key, args=(driver, password))
 
